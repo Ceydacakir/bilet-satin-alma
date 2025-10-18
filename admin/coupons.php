@@ -90,7 +90,7 @@ $coupons = $stmt->fetchAll();
                                         <td><?php echo $c['expire_date'] ? h(date('d.m.Y', strtotime($c['expire_date']))) : '<span class="text-muted">Sınırsız</span>'; ?></td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <a href="coupon_add.php?id=<?php echo $c['id']; ?>" class="btn btn-outline-primary" title="Düzenle"><i class="fas fa-edit"></i></a>
+                                                <a href="coupon_edit.php?id=<?php echo $c['id']; ?>" class="btn btn-outline-primary" title="Düzenle"><i class="fas fa-edit"></i></a>
                                                 <form method="post" style="display:inline">
                                                     <input type="hidden" name="coupon_id" value="<?php echo $c['id']; ?>">
                                                     <button type="submit" name="delete_coupon" class="btn btn-outline-danger" title="Sil"><i class="fas fa-trash"></i></button>

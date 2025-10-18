@@ -194,8 +194,8 @@ $companies = $stmt->fetchAll();
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <a href="company_users.php?id=<?php echo $company['id']; ?>" 
-                                                   class="btn btn-outline-info" title="Kullanıcılar">
-                                                    <i class="fas fa-users"></i>
+                                                   class="btn btn-outline-info" title="Admin Yönetimi">
+                                                    <i class="fas fa-user-shield"></i>
                                                 </a>
                                                 <button class="btn btn-outline-danger" 
                                                         onclick="confirmDelete(<?php echo $company['id']; ?>, '<?php echo h($company['name']); ?>')"
