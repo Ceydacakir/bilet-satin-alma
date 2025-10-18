@@ -3,10 +3,10 @@ session_start();
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
-// Giriş kontrolü - sadece user PDF indirebilir
+// Giriş kontrolü - user ve company rolleri PDF indirebilir
 requireLogin();
-if ($_SESSION['role'] !== 'user') {
-    setErrorMessage('PDF bilet indirme işlemi sadece yolcu kullanıcıları için geçerlidir.');
+if ($_SESSION['role'] === 'admin') {
+    setErrorMessage('Admin kullanıcıları PDF bilet indiremez.');
     header('Location: index.php');
     exit();
 }
@@ -41,22 +41,24 @@ $html = '
     <meta charset="UTF-8">
     <title>Bilet - HopBilet</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .ticket { border: 2px solid #333; padding: 20px; max-width: 600px; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .company { font-size: 24px; font-weight: bold; color: #6366f1; }
-        .route { font-size: 20px; margin: 10px 0; }
-        .details { display: flex; justify-content: space-between; margin: 20px 0; }
-        .detail-item { text-align: center; }
-        .detail-label { font-size: 12px; color: #666; }
-        .detail-value { font-size: 16px; font-weight: bold; }
-        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .ticket { border: 3px solid #6366f1; padding: 30px; max-width: 650px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 15px; margin: 20px auto; }
+        .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #6366f1; padding-bottom: 15px; }
+        .company { font-size: 28px; font-weight: bold; color: #6366f1; }
+        .route { font-size: 22px; margin: 10px 0; color: #333; font-weight: 600; }
+        .details { display: flex; justify-content: space-between; margin: 25px 0; padding: 20px; background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%); border-radius: 10px; }
+        .detail-item { text-align: center; padding: 10px; }
+        .detail-label { font-size: 13px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-value { font-size: 18px; font-weight: bold; color: #333; margin-top: 5px; }
+        .footer { text-align: center; margin-top: 25px; font-size: 13px; color: #666; padding-top: 20px; border-top: 2px solid #e0e0e0; }
+        .footer p { margin: 8px 0; }
+        .rocket { font-size: 20px; }
     </style>
 </head>
 <body>
     <div class="ticket">
         <div class="header">
-            <div class="company">HopBilet</div>
+            <div class="company">🚀 HopBilet 🚀</div>
             <div class="route">' . h($ticket['departure_city']) . ' → ' . h($ticket['destination_city']) . '</div>
         </div>
         
@@ -82,10 +84,11 @@ $html = '
         </div>
         
         <div class="footer">
-            <p>Bilet No: #' . $ticket['id'] . '</p>
-            <p>Yolcu: ' . h($_SESSION['full_name']) . '</p>
-            <p>Firma: ' . h($ticket['company_name']) . '</p>
-            <p>Satın Alma: ' . formatDate($ticket['created_at'], 'd.m.Y H:i') . '</p>
+            <p><strong>Bilet No:</strong> #' . $ticket['id'] . ' 🎫</p>
+            <p><strong>Yolcu:</strong> ' . h($_SESSION['full_name']) . '</p>
+            <p><strong>Firma:</strong> ' . h($ticket['company_name']) . '</p>
+            <p><strong>Satın Alma:</strong> ' . formatDate($ticket['created_at'], 'd.m.Y H:i') . '</p>
+            <p class="rocket">✨ İyi Yolculuklar! 🚀</p>
         </div>
     </div>
 </body>

@@ -70,15 +70,13 @@ require_once 'includes/functions.php';
 
     <!-- Hero Section -->
     <div class="hero-section">
-        <div class="stars"></div>
-        <div class="twinkling"></div>
         <div class="rockets"></div>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="hero-content text-center text-white">
-                        <h1 class="display-4 fw-bold mb-4">HopBilet ile Yolculuğa Başla</h1>
-                        <p class="lead mb-5">Türkiye'nin en güvenilir otobüs bileti satış platformu</p>
+                        <h1 class="display-4 fw-bold mb-4">🚀 HopBilet ile Yolculuğa Başla 🚀</h1>
+                        <p class="lead mb-5" style="color: #f8fafc;">Türkiye'nin en güvenilir otobüs bileti satış platformu</p>
                         
                         <!-- Search Form -->
                         <div class="search-form bg-dark p-4 rounded-3 shadow">
@@ -132,8 +130,8 @@ require_once 'includes/functions.php';
                     <div class="feature-icon mb-3">
                         <i class="fas fa-shield-alt fa-3x text-primary"></i>
                     </div>
-                    <h4>Güvenli Ödeme</h4>
-                    <p class="text-muted">Tüm ödemeleriniz güvenli şekilde işlenir ve korunur.</p>
+                    <h4 class="text-white">🔒 Güvenli Ödeme</h4>
+                    <p style="color: #cbd5e1;">Tüm ödemeleriniz güvenli şekilde işlenir ve korunur.</p>
                 </div>
             </div>
             <div class="col-lg-4 mb-4">
@@ -141,8 +139,8 @@ require_once 'includes/functions.php';
                     <div class="feature-icon mb-3">
                         <i class="fas fa-clock fa-3x text-primary"></i>
                     </div>
-                    <h4>7/24 Hizmet</h4>
-                    <p class="text-muted">İstediğiniz zaman bilet alabilir ve işlemlerinizi yapabilirsiniz.</p>
+                    <h4 class="text-white">⏰ 7/24 Hizmet</h4>
+                    <p style="color: #cbd5e1;">İstediğiniz zaman bilet alabilir ve işlemlerinizi yapabilirsiniz.</p>
                 </div>
             </div>
             <div class="col-lg-4 mb-4">
@@ -150,8 +148,8 @@ require_once 'includes/functions.php';
                     <div class="feature-icon mb-3">
                         <i class="fas fa-ticket-alt fa-3x text-primary"></i>
                     </div>
-                    <h4>Kolay İptal</h4>
-                    <p class="text-muted">Kalkış saatinden 1 saat öncesine kadar iptal yapabilirsiniz.</p>
+                    <h4 class="text-white">🎫 Kolay İptal</h4>
+                    <p style="color: #cbd5e1;">Kalkış saatinden 1 saat öncesine kadar iptal yapabilirsiniz.</p>
                 </div>
             </div>
         </div>
@@ -159,25 +157,25 @@ require_once 'includes/functions.php';
 
     <!-- Popular Routes -->
     <div class="container my-5">
-        <h2 class="text-center mb-5">Popüler Güzergahlar</h2>
+        <h2 class="text-center mb-5 text-white">🚀 Popüler Güzergahlar</h2>
         <div class="row">
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="route-card p-3">
-                    <h5>İstanbul - Ankara</h5>
-                    <p class="text-muted">Başkent'e konforlu yolculuk</p>
-                    <span class="badge bg-primary">En Popüler</span>
+                    <h5 class="text-white">🚌 İstanbul - Ankara</h5>
+                    <p style="color: #cbd5e1;">Başkent'e konforlu yolculuk</p>
+                    <span class="badge bg-primary">🏆 En Popüler</span>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="route-card p-3">
-                    <h5>İzmir - Ankara</h5>
-                    <p class="text-muted">Ege'den başkente</p>
+                    <h5 class="text-white">🚌 İzmir - Ankara</h5>
+                    <p style="color: #cbd5e1;">Ege'den başkente</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="route-card p-3">
-                    <h5>Manisa - Adana</h5>
-                    <p class="text-muted">Akdeniz'e uzanan yol</p>
+                    <h5 class="text-white">🚌 Manisa - Adana</h5>
+                    <p style="color: #cbd5e1;">Akdeniz'e uzanan yol</p>
                 </div>
             </div>
         </div>
@@ -188,11 +186,11 @@ require_once 'includes/functions.php';
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h5>HopBilet</h5>
-                    <p>Türkiye'nin en güvenilir otobüs bileti satış platformu</p>
+                    <h5>🚀 HopBilet</h5>
+                    <p style="color: #cbd5e1;">Türkiye'nin en güvenilir otobüs bileti satış platformu</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <p>&copy; 2024 HopBilet. Tüm hakları saklıdır.</p>
+                    <p style="color: #cbd5e1;">&copy; 2024 HopBilet. Tüm hakları saklıdır. ✨</p>
                 </div>
             </div>
         </div>

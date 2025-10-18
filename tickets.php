@@ -3,19 +3,16 @@ session_start();
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
-// Giriş kontrolü - sadece user rolü biletlerim sayfasına erişebilir
+// Giriş kontrolü - user ve company rolleri biletlerim sayfasına erişebilir
 requireLogin();
-if ($_SESSION['role'] !== 'user') {
-    if ($_SESSION['role'] === 'admin') {
-        setErrorMessage('Admin kullanıcıları biletlerim sayfasına erişemez.');
-    } elseif ($_SESSION['role'] === 'company') {
-        setErrorMessage('Firma admin kullanıcıları biletlerim sayfasına erişemez.');
-    } else {
-        setErrorMessage('Bu sayfa sadece yolcu kullanıcıları için geçerlidir.');
-    }
+if ($_SESSION['role'] === 'admin') {
+    setErrorMessage('Admin kullanıcıları biletlerim sayfasına erişemez.');
     header('Location: index.php');
     exit();
 }
+
+// Firma adminleri de kendi biletlerini görebilir
+$target_user_id = $_SESSION['user_id'];
 
 // Bilet iptal işlemi
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_ticket'])) {
@@ -76,7 +73,7 @@ $stmt = $pdo->prepare("
     GROUP BY t.id
     ORDER BY t.created_at DESC
 ");
-$stmt->execute([$_SESSION['user_id']]);
+$stmt->execute([$target_user_id]);
 $tickets = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -136,14 +133,14 @@ $tickets = $stmt->fetchAll();
         <div class="row mb-4">
             <div class="col-md-8">
                 <h2 class="text-white">
-                    <i class="fas fa-ticket-alt me-2"></i>Biletlerim
+                    <i class="fas fa-ticket-alt me-2"></i>Biletlerim 🎫🚀
                 </h2>
-                <p class="text-muted">Tüm biletlerinizi buradan görüntüleyebilir ve yönetebilirsiniz.</p>
+                <p class="text-light">Tüm biletlerinizi buradan görüntüleyebilir ve yönetebilirsiniz.</p>
             </div>
             <div class="col-md-4">
-                <div class="card bg-dark border-secondary">
+                <div class="card" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #6366f1;">
                     <div class="card-body text-center">
-                        <h6 class="text-muted mb-1">Mevcut Bakiye</h6>
+                        <h6 class="text-light mb-1">Bilet Kredisi 💳</h6>
                         <h4 class="text-primary mb-0"><?php echo formatPrice($_SESSION['balance']); ?></h4>
                     </div>
                 </div>
@@ -155,11 +152,11 @@ $tickets = $stmt->fetchAll();
 
         <!-- Biletler -->
         <?php if (empty($tickets)): ?>
-            <div class="card bg-dark border-secondary">
+            <div class="card" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569;">
                 <div class="card-body text-center py-5">
-                    <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
-                    <h5 class="text-white">Henüz Biletiniz Yok</h5>
-                    <p class="text-muted">İlk biletinizi almak için sefer arayabilirsiniz.</p>
+                    <i class="fas fa-rocket fa-3x text-primary mb-3"></i>
+                    <h5 class="text-white">Henüz Biletiniz Yok 🚀</h5>
+                    <p class="text-light">İlk biletinizi almak için sefer arayabilirsiniz.</p>
                     <a href="search.php" class="btn btn-primary">
                         <i class="fas fa-search me-2"></i>Sefer Ara
                     </a>
@@ -169,7 +166,7 @@ $tickets = $stmt->fetchAll();
             <div class="row">
                 <?php foreach ($tickets as $ticket): ?>
                     <div class="col-lg-6 mb-4">
-                        <div class="card bg-dark border-secondary h-100">
+                        <div class="card h-100" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569;">
                             <div class="card-body">
                                 <!-- Bilet Başlığı - Sadeleştirilmiş -->
                                 <div class="d-flex justify-content-between align-items-start mb-3">
@@ -177,7 +174,7 @@ $tickets = $stmt->fetchAll();
                                         <h5 class="text-white mb-1">
                                             <i class="fas fa-bus me-2"></i><?php echo h($ticket['company_name']); ?>
                                         </h5>
-                                        <p class="text-muted mb-0">
+                                        <p class="text-light mb-0">
                                             <i class="fas fa-chair me-1"></i>Koltuk: <?php echo h($ticket['seat_numbers']); ?>
                                         </p>
                                     </div>
@@ -207,7 +204,7 @@ $tickets = $stmt->fetchAll();
                                 <!-- Sadeleştirilmiş Bilgiler - Sadece Koltuk ve Firma -->
                                 <div class="row mb-3">
                                     <div class="col-6">
-                                        <div class="p-3 bg-secondary rounded text-center">
+                                        <div class="p-3 rounded text-center" style="background: rgba(99, 102, 241, 0.2); border: 1px solid #6366f1;">
                                             <h6 class="text-white mb-1">
                                                 <i class="fas fa-chair me-2"></i>Koltuk
                                             </h6>
@@ -215,7 +212,7 @@ $tickets = $stmt->fetchAll();
                                         </div>
                                     </div>
                                     <div class="col-6">
-                                        <div class="p-3 bg-secondary rounded text-center">
+                                        <div class="p-3 rounded text-center" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;">
                                             <h6 class="text-white mb-1">
                                                 <i class="fas fa-bus me-2"></i>Firma
                                             </h6>

@@ -11,6 +11,13 @@ if ($_SESSION['role'] === 'admin') {
     exit();
 }
 
+// Firma adminleri için user_id belirleme
+$target_user_id = $_SESSION['user_id'];
+if ($_SESSION['role'] === 'company') {
+    // Firma admini kendi hesabını görüntülüyor
+    $target_user_id = $_SESSION['user_id'];
+}
+
 $error_message = '';
 $success_message = '';
 
@@ -101,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_balance'])) {
 
 // Kullanıcı bilgilerini al
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$_SESSION['user_id']]);
+$stmt->execute([$target_user_id]);
 $user = $stmt->fetch();
 
 // İstatistikleri al
@@ -109,18 +116,34 @@ $stats = [];
 
 // Toplam bilet sayısı
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM tickets WHERE user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
+$stmt->execute([$target_user_id]);
 $stats['total_tickets'] = $stmt->fetchColumn();
 
 // Aktif bilet sayısı
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM tickets WHERE user_id = ? AND status = 'active'");
-$stmt->execute([$_SESSION['user_id']]);
+$stmt->execute([$target_user_id]);
 $stats['active_tickets'] = $stmt->fetchColumn();
 
 // Toplam harcama
 $stmt = $pdo->prepare("SELECT SUM(total_price) FROM tickets WHERE user_id = ? AND status = 'active'");
-$stmt->execute([$_SESSION['user_id']]);
+$stmt->execute([$target_user_id]);
 $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
+
+// Son biletleri al (en son 5 bilet)
+$stmt = $pdo->prepare("
+    SELECT t.*, tr.departure_city, tr.destination_city, tr.departure_time, tr.arrival_time,
+           bc.name as company_name, GROUP_CONCAT(bs.seat_number) as seat_numbers
+    FROM tickets t
+    JOIN trips tr ON t.trip_id = tr.id
+    JOIN bus_companies bc ON tr.company_id = bc.id
+    LEFT JOIN booked_seats bs ON t.id = bs.ticket_id
+    WHERE t.user_id = ?
+    GROUP BY t.id
+    ORDER BY t.created_at DESC
+    LIMIT 5
+");
+$stmt->execute([$target_user_id]);
+$recent_tickets = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -179,9 +202,9 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
         <div class="row mb-4">
             <div class="col-12">
                 <h2 class="text-white">
-                    <i class="fas fa-user-circle me-2"></i>Hesabım
+                    <i class="fas fa-user-circle me-2"></i>Hesabım 🚀
                 </h2>
-                <p class="text-muted">Profil bilgilerinizi yönetin ve hesap istatistiklerinizi görüntüleyin.</p>
+                <p class="text-light">Profil bilgilerinizi yönetin ve hesap istatistiklerinizi görüntüleyin.</p>
             </div>
         </div>
 
@@ -192,10 +215,10 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
             <!-- Sol Kolon - Profil Bilgileri -->
             <div class="col-lg-8">
                 <!-- Profil Düzenleme -->
-                <div class="card bg-dark border-secondary mb-4">
-                    <div class="card-header">
+                <div class="card mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569;">
+                    <div class="card-header" style="background: rgba(99, 102, 241, 0.1); border-bottom: 1px solid #6366f1;">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-edit me-2"></i>Profil Bilgileri
+                            <i class="fas fa-edit me-2"></i>Profil Bilgileri 🚀
                         </h5>
                     </div>
                     <div class="card-body">
@@ -210,12 +233,12 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="full_name" class="form-label">Ad Soyad</label>
+                                    <label for="full_name" class="form-label text-white">Ad Soyad</label>
                                     <input type="text" class="form-control" id="full_name" name="full_name" 
                                            value="<?php echo h($user['full_name']); ?>" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">E-posta</label>
+                                    <label for="email" class="form-label text-white">E-posta</label>
                                     <input type="email" class="form-control" id="email" name="email" 
                                            value="<?php echo h($user['email']); ?>" required>
                                 </div>
@@ -223,17 +246,17 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
 
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="current_password" class="form-label">Mevcut Şifre</label>
+                                    <label for="current_password" class="form-label text-white">Mevcut Şifre</label>
                                     <input type="password" class="form-control" id="current_password" name="current_password" 
                                            placeholder="Şifre değiştirmek için girin">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="new_password" class="form-label">Yeni Şifre</label>
+                                    <label for="new_password" class="form-label text-white">Yeni Şifre</label>
                                     <input type="password" class="form-control" id="new_password" name="new_password" 
                                            placeholder="Yeni şifre">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="confirm_password" class="form-label">Şifre Tekrar</label>
+                                    <label for="confirm_password" class="form-label text-white">Şifre Tekrar</label>
                                     <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
                                            placeholder="Yeni şifre tekrar">
                                 </div>
@@ -248,11 +271,64 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                     </div>
                 </div>
 
-                <!-- Bakiye Yükleme -->
-                <div class="card bg-dark border-secondary">
-                    <div class="card-header">
+                <!-- Son Biletler -->
+                <div class="card mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569;">
+                    <div class="card-header" style="background: rgba(99, 102, 241, 0.1); border-bottom: 1px solid #6366f1;">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-wallet me-2"></i>Bakiye Yükle
+                            <i class="fas fa-ticket-alt me-2"></i>Son Biletlerim 🎫
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <?php if (empty($recent_tickets)): ?>
+                            <div class="text-center py-3">
+                                <i class="fas fa-ticket-alt fa-2x text-muted mb-2"></i>
+                                <p class="text-light mb-0">Henüz biletiniz yok</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="list-group list-group-flush">
+                                <?php foreach ($recent_tickets as $ticket): ?>
+                                    <div class="list-group-item" style="background: rgba(30, 41, 59, 0.5); border: 1px solid #475569; margin-bottom: 0.5rem; border-radius: 0.5rem;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="text-white mb-1">
+                                                    <?php echo h($ticket['departure_city']); ?> → <?php echo h($ticket['destination_city']); ?>
+                                                </h6>
+                                                <small class="text-light">
+                                                    <i class="fas fa-calendar me-1"></i><?php echo formatDate($ticket['departure_time'], 'd.m.Y H:i'); ?>
+                                                    <span class="ms-2"><i class="fas fa-chair me-1"></i><?php echo h($ticket['seat_numbers']); ?></span>
+                                                </small>
+                                            </div>
+                                            <div class="text-end">
+                                                <?php
+                                                $badge_class = $ticket['status'] === 'active' ? 'bg-success' : ($ticket['status'] === 'cancelled' ? 'bg-danger' : 'bg-secondary');
+                                                $badge_text = $ticket['status'] === 'active' ? 'Aktif' : ($ticket['status'] === 'cancelled' ? 'İptal' : 'Süresi Dolmuş');
+                                                ?>
+                                                <span class="badge <?php echo $badge_class; ?> mb-2"><?php echo $badge_text; ?></span>
+                                                <div class="text-white fw-bold"><?php echo formatPrice($ticket['total_price']); ?></div>
+                                                <?php if ($ticket['status'] == 'active'): ?>
+                                                    <a href="download_ticket.php?id=<?php echo $ticket['id']; ?>" class="btn btn-sm btn-outline-primary mt-2" target="_blank">
+                                                        <i class="fas fa-download me-1"></i>PDF
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="tickets.php" class="btn btn-outline-primary">
+                                    <i class="fas fa-list me-2"></i>Tüm Biletleri Gör
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Bakiye Yükleme -->
+                <div class="card" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569;">
+                    <div class="card-header" style="background: rgba(99, 102, 241, 0.1); border-bottom: 1px solid #6366f1;">
+                        <h5 class="text-white mb-0">
+                            <i class="fas fa-wallet me-2"></i>Bakiye Yükle 💰
                         </h5>
                     </div>
                     <div class="card-body">
@@ -261,7 +337,7 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                             
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label for="amount" class="form-label">Miktar (TL)</label>
+                                    <label for="amount" class="form-label text-white">Miktar (TL)</label>
                                     <input type="number" class="form-control" id="amount" name="amount" 
                                            min="10" max="10000" step="10" placeholder="Yüklenecek miktar" required>
                                 </div>
@@ -272,7 +348,7 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                                 </div>
                             </div>
                             
-                            <small class="text-muted">
+                            <small class="text-light">
                                 <i class="fas fa-info-circle me-1"></i>
                                 Minimum 10 TL, maksimum 10.000 TL yükleyebilirsiniz.
                             </small>
@@ -284,19 +360,19 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
             <!-- Sağ Kolon - İstatistikler ve Bilgiler -->
             <div class="col-lg-4">
                 <!-- Hesap Bilgileri -->
-                <div class="card bg-dark border-secondary mb-4">
-                    <div class="card-header">
+                <div class="card mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569;">
+                    <div class="card-header" style="background: rgba(99, 102, 241, 0.1); border-bottom: 1px solid #6366f1;">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-info-circle me-2"></i>Hesap Bilgileri
+                            <i class="fas fa-info-circle me-2"></i>Hesap Bilgileri 🚀
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <small class="text-muted">Kullanıcı ID</small>
+                            <small class="text-light">Kullanıcı ID</small>
                             <p class="text-white mb-0">#<?php echo $user['id']; ?></p>
                         </div>
                         <div class="mb-3">
-                            <small class="text-muted">Rol</small>
+                            <small class="text-light">Rol</small>
                             <p class="text-white mb-0">
                                 <?php
                                 $role_names = [
@@ -309,46 +385,46 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                             </p>
                         </div>
                         <div class="mb-3">
-                            <small class="text-muted">Kayıt Tarihi</small>
+                            <small class="text-light">Kayıt Tarihi</small>
                             <p class="text-white mb-0"><?php echo formatDate($user['created_at'], 'd.m.Y'); ?></p>
                         </div>
                         <div class="mb-0">
-                            <small class="text-muted">Mevcut Bakiye</small>
+                            <small class="text-light">Bilet Kredisi 💳</small>
                             <h4 class="text-primary mb-0"><?php echo formatPrice($user['balance']); ?></h4>
                         </div>
                     </div>
                 </div>
 
                 <!-- İstatistikler -->
-                <div class="card bg-dark border-secondary mb-4">
-                    <div class="card-header">
+                <div class="card mb-4" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569;">
+                    <div class="card-header" style="background: rgba(99, 102, 241, 0.1); border-bottom: 1px solid #6366f1;">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-chart-bar me-2"></i>İstatistikler
+                            <i class="fas fa-chart-bar me-2"></i>İstatistikler 📊
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-6 mb-3">
-                                <h4 class="text-primary mb-1"><?php echo $stats['total_tickets']; ?></h4>
-                                <small class="text-muted">Toplam Bilet</small>
+                                <h4 class="text-primary mb-1"><?php echo $stats['total_tickets']; ?> 🎫</h4>
+                                <small class="text-light">Toplam Bilet</small>
                             </div>
                             <div class="col-6 mb-3">
-                                <h4 class="text-success mb-1"><?php echo $stats['active_tickets']; ?></h4>
-                                <small class="text-muted">Aktif Bilet</small>
+                                <h4 class="text-success mb-1"><?php echo $stats['active_tickets']; ?> ✅</h4>
+                                <small class="text-light">Aktif Bilet</small>
                             </div>
                             <div class="col-12">
-                                <h4 class="text-warning mb-1"><?php echo formatPrice($stats['total_spent']); ?></h4>
-                                <small class="text-muted">Toplam Harcama</small>
+                                <h4 class="text-warning mb-1"><?php echo formatPrice($stats['total_spent']); ?> 💰</h4>
+                                <small class="text-light">Toplam Harcama</small>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Hızlı Erişim -->
-                <div class="card bg-dark border-secondary">
-                    <div class="card-header">
+                <div class="card" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #475569;">
+                    <div class="card-header" style="background: rgba(99, 102, 241, 0.1); border-bottom: 1px solid #6366f1;">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-bolt me-2"></i>Hızlı Erişim
+                            <i class="fas fa-bolt me-2"></i>Hızlı Erişim ⚡
                         </h5>
                     </div>
                     <div class="card-body">
