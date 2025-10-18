@@ -61,7 +61,7 @@ function requireAnyRole($roles) {
 
 // Güvenli çıktı için HTML escape
 function h($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars($string ?? '', ENT_QUOTES, 'UTF-8');
 }
 
 // Başarı mesajı göster
@@ -175,14 +175,37 @@ function getBookedSeats($pdo, $trip_id) {
     return $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
+// Sefer geçmiş mi kontrol et
+function isTripInPast($departure_time) {
+    try {
+        $departure = new DateTime($departure_time);
+        $now = new DateTime();
+        return $departure <= $now;
+    } catch (Exception $e) {
+        return true; // Geçersiz tarih formatı durumunda geçmiş kabul et
+    }
+}
+
 // Bilet iptal edilebilir mi?
 function canCancelTicket($departure_time) {
-    $departure = new DateTime($departure_time);
-    $now = new DateTime();
-    $diff = $departure->diff($now);
-    
-    // Kalkış saatinden 1 saat öncesine kadar iptal yapılabilir
-    return $departure > $now && $diff->h >= 1;
+    try {
+        $departure = new DateTime($departure_time);
+        $now = new DateTime();
+        
+        // Geçmiş seferler iptal edilemez
+        if ($departure <= $now) {
+            return false;
+        }
+        
+        // Kalkış saatinden 1 saat öncesine kadar iptal yapılabilir
+        $diff = $departure->diff($now);
+        $hoursUntilDeparture = $diff->days * 24 + $diff->h;
+        
+        return $hoursUntilDeparture >= 1;
+    } catch (Exception $e) {
+        // Geçersiz tarih formatı durumunda iptal edilemez
+        return false;
+    }
 }
 
 // PDF bilet oluştur

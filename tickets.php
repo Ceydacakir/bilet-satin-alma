@@ -32,7 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_ticket'])) {
     $ticket = $stmt->fetch();
     
     if ($ticket) {
-        if (canCancelTicket($ticket['departure_time'])) {
+        // Geçmiş sefer kontrolü
+        if (isTripInPast($ticket['departure_time'])) {
+            setErrorMessage('Geçmiş seferler iptal edilemez.');
+        } elseif (canCancelTicket($ticket['departure_time'])) {
             try {
                 $pdo->beginTransaction();
                 
@@ -185,19 +188,26 @@ $tickets = $stmt->fetchAll();
                                         <?php
                                         $status_class = '';
                                         $status_text = '';
-                                        switch ($ticket['status']) {
-                                            case 'active':
-                                                $status_class = 'bg-success';
-                                                $status_text = 'Aktif';
-                                                break;
-                                            case 'cancelled':
-                                                $status_class = 'bg-danger';
-                                                $status_text = 'İptal';
-                                                break;
-                                            case 'expired':
-                                                $status_class = 'bg-secondary';
-                                                $status_text = 'Süresi Dolmuş';
-                                                break;
+                                        
+                                        // Geçmiş seferler için özel kontrol
+                                        if ($ticket['status'] == 'active' && isTripInPast($ticket['departure_time'])) {
+                                            $status_class = 'bg-warning';
+                                            $status_text = 'Süresi Dolmuş';
+                                        } else {
+                                            switch ($ticket['status']) {
+                                                case 'active':
+                                                    $status_class = 'bg-success';
+                                                    $status_text = 'Aktif';
+                                                    break;
+                                                case 'cancelled':
+                                                    $status_class = 'bg-danger';
+                                                    $status_text = 'İptal';
+                                                    break;
+                                                case 'expired':
+                                                    $status_class = 'bg-secondary';
+                                                    $status_text = 'Süresi Dolmuş';
+                                                    break;
+                                            }
                                         }
                                         ?>
                                         <span class="badge <?php echo $status_class; ?>"><?php echo $status_text; ?></span>
@@ -227,7 +237,12 @@ $tickets = $stmt->fetchAll();
                                 <!-- Aksiyon Butonları -->
                                 <div class="d-flex gap-2">
                                     <?php if ($ticket['status'] == 'active'): ?>
-                                        <?php if (canCancelTicket($ticket['departure_time'])): ?>
+                                        <?php if (isTripInPast($ticket['departure_time'])): ?>
+                                            <button class="btn btn-outline-secondary btn-sm" disabled 
+                                                    title="Geçmiş seferler iptal edilemez">
+                                                <i class="fas fa-times me-1"></i>Geçmiş Sefer
+                                            </button>
+                                        <?php elseif (canCancelTicket($ticket['departure_time'])): ?>
                                             <button class="btn btn-outline-danger btn-sm" 
                                                     onclick="confirmCancel(<?php echo $ticket['id']; ?>)">
                                                 <i class="fas fa-times me-1"></i>İptal Et
