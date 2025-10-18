@@ -179,7 +179,7 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
         <div class="row mb-4">
             <div class="col-12">
                 <h2 class="text-white">
-                    <i class="fas fa-user-circle me-2"></i>Hesabım
+                    <i class="fas fa-rocket me-2"></i>Hesabım
                 </h2>
                 <p class="text-muted">Profil bilgilerinizi yönetin ve hesap istatistiklerinizi görüntüleyin.</p>
             </div>
@@ -195,7 +195,7 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                 <div class="card bg-dark border-secondary mb-4">
                     <div class="card-header">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-edit me-2"></i>Profil Bilgileri
+                            <i class="fas fa-rocket me-2"></i>Profil Bilgileri
                         </h5>
                     </div>
                     <div class="card-body">
@@ -252,7 +252,7 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                 <div class="card bg-dark border-secondary">
                     <div class="card-header">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-wallet me-2"></i>Bakiye Yükle
+                            <i class="fas fa-rocket me-2"></i>Bakiye Yükle
                         </h5>
                     </div>
                     <div class="card-body">
@@ -287,7 +287,7 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                 <div class="card bg-dark border-secondary mb-4">
                     <div class="card-header">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-info-circle me-2"></i>Hesap Bilgileri
+                            <i class="fas fa-rocket me-2"></i>Hesap Bilgileri
                         </h5>
                     </div>
                     <div class="card-body">
@@ -313,7 +313,9 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                             <p class="text-white mb-0"><?php echo formatDate($user['created_at'], 'd.m.Y'); ?></p>
                         </div>
                         <div class="mb-0">
-                            <small class="text-muted">Mevcut Bakiye</small>
+                            <small class="text-muted">
+                                <i class="fas fa-rocket me-1"></i>Mevcut Bakiye
+                            </small>
                             <h4 class="text-primary mb-0"><?php echo formatPrice($user['balance']); ?></h4>
                         </div>
                     </div>
@@ -323,22 +325,28 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                 <div class="card bg-dark border-secondary mb-4">
                     <div class="card-header">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-chart-bar me-2"></i>İstatistikler
+                            <i class="fas fa-rocket me-2"></i>İstatistikler
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-6 mb-3">
                                 <h4 class="text-primary mb-1"><?php echo $stats['total_tickets']; ?></h4>
-                                <small class="text-muted">Toplam Bilet</small>
+                                <small class="text-muted">
+                                    <i class="fas fa-rocket me-1"></i>Toplam Bilet
+                                </small>
                             </div>
                             <div class="col-6 mb-3">
                                 <h4 class="text-success mb-1"><?php echo $stats['active_tickets']; ?></h4>
-                                <small class="text-muted">Aktif Bilet</small>
+                                <small class="text-muted">
+                                    <i class="fas fa-rocket me-1"></i>Aktif Bilet
+                                </small>
                             </div>
                             <div class="col-12">
                                 <h4 class="text-warning mb-1"><?php echo formatPrice($stats['total_spent']); ?></h4>
-                                <small class="text-muted">Toplam Harcama</small>
+                                <small class="text-muted">
+                                    <i class="fas fa-rocket me-1"></i>Toplam Harcama
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -348,25 +356,25 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                 <div class="card bg-dark border-secondary">
                     <div class="card-header">
                         <h5 class="text-white mb-0">
-                            <i class="fas fa-bolt me-2"></i>Hızlı Erişim
+                            <i class="fas fa-rocket me-2"></i>Hızlı Erişim
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
                             <a href="tickets.php" class="btn btn-outline-primary">
-                                <i class="fas fa-ticket-alt me-2"></i>Biletlerim
+                                <i class="fas fa-rocket me-2"></i>Biletlerim
                             </a>
                             <a href="search.php" class="btn btn-outline-success">
                                 <i class="fas fa-search me-2"></i>Sefer Ara
                             </a>
                             <?php if ($_SESSION['role'] == 'company'): ?>
                                 <a href="company/dashboard.php" class="btn btn-outline-warning">
-                                    <i class="fas fa-building me-2"></i>Firma Paneli
+                                    <i class="fas fa-rocket me-2"></i>Firma Paneli
                                 </a>
                             <?php endif; ?>
                             <?php if ($_SESSION['role'] == 'admin'): ?>
                                 <a href="admin/dashboard.php" class="btn btn-outline-danger">
-                                    <i class="fas fa-cog me-2"></i>Admin Paneli
+                                    <i class="fas fa-rocket me-2"></i>Admin Paneli
                                 </a>
                             <?php endif; ?>
                         </div>
