@@ -20,7 +20,7 @@ require_once 'includes/functions.php';
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="index.php">
-                <i class="fas fa-bus me-2"></i>HopBilet
+                🚀 HopBilet
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -72,51 +72,86 @@ require_once 'includes/functions.php';
     <div class="hero-section">
         <div class="stars"></div>
         <div class="twinkling"></div>
-        <div class="rockets"></div>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="hero-content text-center text-white">
-                        <h1 class="display-4 fw-bold mb-4">HopBilet ile Yolculuğa Başla</h1>
-                        <p class="lead mb-5">Türkiye'nin en güvenilir otobüs bileti satış platformu</p>
+                        <div class="hero-title-container mb-4">
+                            <h1 class="display-4 fw-bold mb-3">
+                                <span class="bouncing-text">🚀</span>
+                                <span class="gradient-text">HopBilet</span>
+                                <span class="bouncing-text">🚀</span>
+                            </h1>
+                            <h2 class="display-6 fw-bold mb-3 text-warning">
+                                <span class="typing-animation">Yolculuğa Hazır mısın?</span>
+                            </h2>
+                            <p class="lead mb-4 text-info">
+                                <span class="emoji-text">🎯</span>
+                                Türkiye'nin en eğlenceli otobüs bileti platformu
+                                <span class="emoji-text">🎯</span>
+                            </p>
+                            <div class="fun-stats mb-4">
+                                <span class="stat-item">✨ 1000+ Mutlu Yolcu</span>
+                                <span class="stat-item">🎉 50+ Şehir</span>
+                                <span class="stat-item">🚌 24/7 Hizmet</span>
+                            </div>
+                        </div>
                         
                         <!-- Search Form -->
-                        <div class="search-form bg-dark p-4 rounded-3 shadow">
-                            <form action="search.php" method="GET">
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="departure_city" class="form-label">Nereden</label>
-                                        <select class="form-select" id="departure_city" name="departure_city" required>
-                                            <option value="">Şehir Seçin</option>
-                                            <option value="İstanbul">İstanbul</option>
-                                            <option value="Ankara">Ankara</option>
-                                            <option value="İzmir">İzmir</option>
-                                            <option value="Manisa">Manisa</option>
-                                            <option value="Adana">Adana</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="destination_city" class="form-label">Nereye</label>
-                                        <select class="form-select" id="destination_city" name="destination_city" required>
-                                            <option value="">Şehir Seçin</option>
-                                            <option value="İstanbul">İstanbul</option>
-                                            <option value="Ankara">Ankara</option>
-                                            <option value="İzmir">İzmir</option>
-                                            <option value="Manisa">Manisa</option>
-                                            <option value="Adana">Adana</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="departure_date" class="form-label">Tarih</label>
-                                        <input type="date" class="form-control" id="departure_date" name="departure_date" required>
-                                    </div>
+                        <div class="search-form-container">
+                            <div class="search-form bg-dark p-4 rounded-3 shadow">
+                                <div class="search-header mb-4">
+                                    <h3 class="text-center text-white mb-2">
+                                        <span class="search-icon">🎫</span>
+                                        Biletini Bul, Yolculuğa Başla!
+                                        <span class="search-icon">🎫</span>
+                                    </h3>
+                                    <p class="text-center text-muted">Hızlı, güvenli ve eğlenceli bilet arama</p>
                                 </div>
-                                <div class="text-center mt-4">
-                                    <button type="submit" class="btn btn-primary btn-lg px-5">
-                                        <i class="fas fa-search me-2"></i>Sefer Ara
-                                    </button>
-                                </div>
-                            </form>
+                                <form action="search.php" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="departure_city" class="form-label">
+                                                <span class="label-icon">📍</span> Nereden
+                                            </label>
+                                            <select class="form-select" id="departure_city" name="departure_city" required>
+                                                <option value="">🏙️ Şehir Seçin</option>
+                                                <option value="İstanbul">🏛️ İstanbul</option>
+                                                <option value="Ankara">🏛️ Ankara</option>
+                                                <option value="İzmir">🌊 İzmir</option>
+                                                <option value="Manisa">🍇 Manisa</option>
+                                                <option value="Adana">🌶️ Adana</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="destination_city" class="form-label">
+                                                <span class="label-icon">🎯</span> Nereye
+                                            </label>
+                                            <select class="form-select" id="destination_city" name="destination_city" required>
+                                                <option value="">🏙️ Şehir Seçin</option>
+                                                <option value="İstanbul">🏛️ İstanbul</option>
+                                                <option value="Ankara">🏛️ Ankara</option>
+                                                <option value="İzmir">🌊 İzmir</option>
+                                                <option value="Manisa">🍇 Manisa</option>
+                                                <option value="Adana">🌶️ Adana</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="departure_date" class="form-label">
+                                                <span class="label-icon">📅</span> Tarih
+                                            </label>
+                                            <input type="date" class="form-control" id="departure_date" name="departure_date" required>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-4">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5 search-btn">
+                                            <span class="btn-icon">🔍</span>
+                                            <span class="btn-text">Sefer Ara</span>
+                                            <span class="btn-arrow">→</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -126,32 +161,47 @@ require_once 'includes/functions.php';
 
     <!-- Features Section -->
     <div class="container my-5">
+        <div class="features-header text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">
+                <span class="gradient-text">Neden HopBilet?</span>
+            </h2>
+            <p class="lead text-muted">Süper güçlerimizle yolculuğunu unutulmaz kılıyoruz! ✨</p>
+        </div>
         <div class="row">
             <div class="col-lg-4 mb-4">
-                <div class="feature-card text-center p-4">
+                <div class="feature-card text-center p-4 h-100">
                     <div class="feature-icon mb-3">
-                        <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                        <div class="icon-container">
+                            <span class="feature-emoji">🛡️</span>
+                        </div>
                     </div>
-                    <h4>Güvenli Ödeme</h4>
-                    <p class="text-muted">Tüm ödemeleriniz güvenli şekilde işlenir ve korunur.</p>
+                    <h4 class="feature-title">Güvenli Ödeme</h4>
+                    <p class="text-muted">Ödemeleriniz banka güvenliğinde korunur. Hiç endişelenme! 😌</p>
+                    <div class="feature-badge">%100 Güvenli</div>
                 </div>
             </div>
             <div class="col-lg-4 mb-4">
-                <div class="feature-card text-center p-4">
+                <div class="feature-card text-center p-4 h-100">
                     <div class="feature-icon mb-3">
-                        <i class="fas fa-clock fa-3x text-primary"></i>
+                        <div class="icon-container">
+                            <span class="feature-emoji">⏰</span>
+                        </div>
                     </div>
-                    <h4>7/24 Hizmet</h4>
-                    <p class="text-muted">İstediğiniz zaman bilet alabilir ve işlemlerinizi yapabilirsiniz.</p>
+                    <h4 class="feature-title">7/24 Hizmet</h4>
+                    <p class="text-muted">Gece yarısı bile bilet alabilirsin! Biz her zaman buradayız 🌙</p>
+                    <div class="feature-badge">Her Zaman Açık</div>
                 </div>
             </div>
             <div class="col-lg-4 mb-4">
-                <div class="feature-card text-center p-4">
+                <div class="feature-card text-center p-4 h-100">
                     <div class="feature-icon mb-3">
-                        <i class="fas fa-ticket-alt fa-3x text-primary"></i>
+                        <div class="icon-container">
+                            <span class="feature-emoji">🎫</span>
+                        </div>
                     </div>
-                    <h4>Kolay İptal</h4>
-                    <p class="text-muted">Kalkış saatinden 1 saat öncesine kadar iptal yapabilirsiniz.</p>
+                    <h4 class="feature-title">Kolay İptal</h4>
+                    <p class="text-muted">Plansız mı kaldın? Sorun değil, kolayca iptal edebilirsin! 😊</p>
+                    <div class="feature-badge">Esnek İptal</div>
                 </div>
             </div>
         </div>
@@ -159,25 +209,56 @@ require_once 'includes/functions.php';
 
     <!-- Popular Routes -->
     <div class="container my-5">
-        <h2 class="text-center mb-5">Popüler Güzergahlar</h2>
+        <div class="routes-header text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">
+                <span class="gradient-text">🔥 Popüler Rotalar</span>
+            </h2>
+            <p class="lead text-muted">En çok tercih edilen güzergahlarımız! Hangi rotayı seçeceksin? 🤔</p>
+        </div>
         <div class="row">
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="route-card p-3">
-                    <h5>İstanbul - Ankara</h5>
-                    <p class="text-muted">Başkent'e konforlu yolculuk</p>
-                    <span class="badge bg-primary">En Popüler</span>
+                <div class="route-card p-4 h-100">
+                    <div class="route-header mb-3">
+                        <div class="route-emoji">🏛️</div>
+                        <h5 class="route-title">İstanbul - Ankara</h5>
+                    </div>
+                    <p class="text-muted route-desc">Başkent'e konforlu yolculuk! Büyük şehirler arası en popüler rota 🚀</p>
+                    <div class="route-footer">
+                        <span class="badge bg-primary route-badge">
+                            <span class="badge-icon">⭐</span> En Popüler
+                        </span>
+                        <span class="route-time">~4.5 saat</span>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="route-card p-3">
-                    <h5>İzmir - Ankara</h5>
-                    <p class="text-muted">Ege'den başkente</p>
+                <div class="route-card p-4 h-100">
+                    <div class="route-header mb-3">
+                        <div class="route-emoji">🌊</div>
+                        <h5 class="route-title">İzmir - Ankara</h5>
+                    </div>
+                    <p class="text-muted route-desc">Ege'nin incisinden başkente! Deniz kokusu eşliğinde yolculuk 🌊</p>
+                    <div class="route-footer">
+                        <span class="badge bg-success route-badge">
+                            <span class="badge-icon">🌊</span> Ege Rüzgarı
+                        </span>
+                        <span class="route-time">~6 saat</span>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="route-card p-3">
-                    <h5>Manisa - Adana</h5>
-                    <p class="text-muted">Akdeniz'e uzanan yol</p>
+                <div class="route-card p-4 h-100">
+                    <div class="route-header mb-3">
+                        <div class="route-emoji">🌶️</div>
+                        <h5 class="route-title">Manisa - Adana</h5>
+                    </div>
+                    <p class="text-muted route-desc">Akdeniz'e uzanan yol! Sıcak güneş ve lezzetli yemekler 🍽️</p>
+                    <div class="route-footer">
+                        <span class="badge bg-warning route-badge">
+                            <span class="badge-icon">🌶️</span> Akdeniz
+                        </span>
+                        <span class="route-time">~8 saat</span>
+                    </div>
                 </div>
             </div>
         </div>
