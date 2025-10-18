@@ -41,11 +41,15 @@ if (!empty($departure_city) && !empty($destination_city) && !empty($departure_da
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body class="dark-theme">
+    <!-- Background Elements -->
+    <div class="rockets"></div>
+    <div class="space-particles"></div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="index.php">
-                <i class="fas fa-bus me-2"></i>HopBilet
+                <i class="fas fa-rocket me-2 rocket-icon"></i>HopBilet
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -66,7 +70,7 @@ if (!empty($departure_city) && !empty($destination_city) && !empty($departure_da
                                 <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['full_name']); ?>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">Hesabım</a></li>
+                                <li><a class="dropdown-item" href="account.php">Hesabım</a></li>
                                 <li><a class="dropdown-item" href="tickets.php">Biletlerim</a></li>
                                 <?php if ($_SESSION['role'] == 'company'): ?>
                                     <li><a class="dropdown-item" href="company/dashboard.php">Firma Paneli</a></li>

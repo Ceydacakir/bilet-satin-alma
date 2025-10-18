@@ -67,11 +67,15 @@ $company = $stmt->fetch();
     <link href="../assets/css/style.css" rel="stylesheet">
 </head>
 <body class="dark-theme">
+    <!-- Background Elements -->
+    <div class="rockets"></div>
+    <div class="space-particles"></div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="../index.php">
-                <i class="fas fa-bus me-2"></i>HopBilet
+                <i class="fas fa-rocket me-2 rocket-icon"></i>HopBilet
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -97,8 +101,8 @@ $company = $stmt->fetch();
                             <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['full_name']); ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="../profile.php">Hesabım</a></li>
-                            <li><a class="dropdown-item" href="../tickets.php">Biletlerim</a></li>
+                            <li><a class="dropdown-item" href="../account.php">Hesabım</a></li>
+                            <li><a class="dropdown-item" href="../tickets.php">Bilet Yönetimi</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="../logout.php">Çıkış Yap</a></li>
                         </ul>
@@ -113,9 +117,9 @@ $company = $stmt->fetch();
         <div class="row mb-4">
             <div class="col-12">
                 <h2 class="text-white">
-                    <i class="fas fa-building me-2"></i>Firma Paneli
+                    <i class="fas fa-rocket me-2 rocket-icon"></i>Firma Paneli
                 </h2>
-                <p class="text-muted"><?php echo h($company['name']); ?> - Yönetim Paneli</p>
+                <p class="text-muted"><?php echo h($company['name']); ?> - Yönetim Paneli 🚀</p>
             </div>
         </div>
 
@@ -255,16 +259,16 @@ $company = $stmt->fetch();
                     <div class="card-body">
                         <div class="d-grid gap-2">
                             <a href="trip_add.php" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Yeni Sefer Ekle
+                                <i class="fas fa-rocket me-2"></i>Yeni Sefer Ekle
                             </a>
                             <a href="trips.php" class="btn btn-outline-primary">
                                 <i class="fas fa-list me-2"></i>Tüm Seferler
                             </a>
-                            <a href="coupon_add.php" class="btn btn-outline-success">
-                                <i class="fas fa-tag me-2"></i>Yeni Kupon Oluştur
+                            <a href="../tickets.php" class="btn btn-outline-success">
+                                <i class="fas fa-ticket-alt me-2"></i>Bilet Yönetimi
                             </a>
-                            <a href="coupons.php" class="btn btn-outline-warning">
-                                <i class="fas fa-tags me-2"></i>Kupon Yönetimi
+                            <a href="coupon_add.php" class="btn btn-outline-warning">
+                                <i class="fas fa-tag me-2"></i>Kupon Oluştur
                             </a>
                         </div>
                     </div>

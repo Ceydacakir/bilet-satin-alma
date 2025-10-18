@@ -16,11 +16,15 @@ require_once 'includes/functions.php';
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body class="dark-theme">
+    <!-- Background Elements -->
+    <div class="rockets"></div>
+    <div class="space-particles"></div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="index.php">
-                <i class="fas fa-bus me-2"></i>HopBilet
+                <i class="fas fa-rocket me-2 rocket-icon"></i>HopBilet
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -42,7 +46,7 @@ require_once 'includes/functions.php';
                             </a>
                             <ul class="dropdown-menu">
                                 <?php if ($_SESSION['role'] !== 'admin'): ?>
-                                    <li><a class="dropdown-item" href="profile.php">Hesabım</a></li>
+                                    <li><a class="dropdown-item" href="account.php">Hesabım</a></li>
                                     <li><a class="dropdown-item" href="tickets.php">Biletlerim</a></li>
                                 <?php endif; ?>
                                 <?php if ($_SESSION['role'] == 'company'): ?>
@@ -50,6 +54,7 @@ require_once 'includes/functions.php';
                                 <?php endif; ?>
                                 <?php if ($_SESSION['role'] == 'admin'): ?>
                                     <li><a class="dropdown-item" href="admin/dashboard.php">Admin Paneli</a></li>
+                                    <li><a class="dropdown-item" href="tickets.php">Bilet Yönetimi</a></li>
                                 <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="logout.php">Çıkış Yap</a></li>

@@ -127,11 +127,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['purchase_ticket'])) {
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body class="dark-theme">
+    <!-- Background Elements -->
+    <div class="rockets"></div>
+    <div class="space-particles"></div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="index.php">
-                <i class="fas fa-bus me-2"></i>HopBilet
+                <i class="fas fa-rocket me-2 rocket-icon"></i>HopBilet
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

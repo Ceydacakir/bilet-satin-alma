@@ -70,11 +70,15 @@ $top_companies = $stmt->fetchAll();
     <link href="../assets/css/style.css" rel="stylesheet">
 </head>
 <body class="dark-theme">
+    <!-- Background Elements -->
+    <div class="rockets"></div>
+    <div class="space-particles"></div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="../index.php">
-                <i class="fas fa-bus me-2"></i>HopBilet
+                <i class="fas fa-rocket me-2 rocket-icon"></i>HopBilet
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -100,8 +104,8 @@ $top_companies = $stmt->fetchAll();
                             <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['full_name']); ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="../profile.php">Hesabım</a></li>
-                            <li><a class="dropdown-item" href="../tickets.php">Biletlerim</a></li>
+                            <li><a class="dropdown-item" href="../tickets.php">Bilet Yönetimi</a></li>
+                            <li><a class="dropdown-item" href="users.php">Kullanıcı Yönetimi</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="../logout.php">Çıkış Yap</a></li>
                         </ul>
@@ -116,9 +120,9 @@ $top_companies = $stmt->fetchAll();
         <div class="row mb-4">
             <div class="col-12">
                 <h2 class="text-white">
-                    <i class="fas fa-cog me-2"></i>Admin Paneli
+                    <i class="fas fa-rocket me-2 rocket-icon"></i>Admin Paneli
                 </h2>
-                <p class="text-muted">Sistem yönetimi ve istatistikler</p>
+                <p class="text-muted">Sistem yönetimi ve istatistikler 🚀</p>
             </div>
         </div>
 
@@ -339,22 +343,22 @@ $top_companies = $stmt->fetchAll();
                         <div class="row">
                             <div class="col-md-3 mb-2">
                                 <a href="company_add.php" class="btn btn-primary w-100">
-                                    <i class="fas fa-plus me-2"></i>Yeni Firma Ekle
+                                    <i class="fas fa-rocket me-2"></i>Yeni Firma Ekle
                                 </a>
                             </div>
-                            <div class="col-md-4 mb-2">
-                                <button class="btn btn-secondary w-100" disabled title="Kullanıcı ekleme devre dışı">
-                                    <i class="fas fa-user-plus me-2"></i>Kullanıcı Ekle
-                                </button>
+                            <div class="col-md-3 mb-2">
+                                <a href="../tickets.php" class="btn btn-success w-100">
+                                    <i class="fas fa-ticket-alt me-2"></i>Bilet Yönetimi
+                                </a>
                             </div>
-                            <div class="col-md-4 mb-2">
+                            <div class="col-md-3 mb-2">
                                 <a href="coupon_add.php" class="btn btn-warning w-100">
                                     <i class="fas fa-tag me-2"></i>Kupon Oluştur
                                 </a>
                             </div>
                             <div class="col-md-3 mb-2">
-                                <a href="../search.php" class="btn btn-info w-100">
-                                    <i class="fas fa-search me-2"></i>Sefer Ara
+                                <a href="users.php" class="btn btn-info w-100">
+                                    <i class="fas fa-users me-2"></i>Kullanıcılar
                                 </a>
                             </div>
                         </div>
