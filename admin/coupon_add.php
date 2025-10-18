@@ -7,6 +7,23 @@ require_once '../includes/functions.php';
 requireRole('admin');
 
 $error_message = '';
+$coupon = null;
+$is_edit = false;
+
+// Düzenleme modu kontrolü
+$coupon_id = (int)($_GET['id'] ?? 0);
+if ($coupon_id > 0) {
+    $is_edit = true;
+    $stmt = $pdo->prepare("SELECT * FROM coupons WHERE id = ?");
+    $stmt->execute([$coupon_id]);
+    $coupon = $stmt->fetch();
+    
+    if (!$coupon) {
+        setErrorMessage('Kupon bulunamadı.');
+        header('Location: coupons.php');
+        exit();
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $code = strtoupper(trim($_POST['code'] ?? ''));
@@ -24,19 +41,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($expire_date && strtotime($expire_date) <= time()) {
         $error_message = 'Son tarih gelecekte olmalı.';
     } else {
-        // Benzersiz kod kontrolü
-        $stmt = $pdo->prepare("SELECT id FROM coupons WHERE code = ?");
-        $stmt->execute([$code]);
+        // Benzersiz kod kontrolü (düzenleme modunda kendi kodu hariç)
+        if ($is_edit) {
+            $stmt = $pdo->prepare("SELECT id FROM coupons WHERE code = ? AND id != ?");
+            $stmt->execute([$code, $coupon_id]);
+        } else {
+            $stmt = $pdo->prepare("SELECT id FROM coupons WHERE code = ?");
+            $stmt->execute([$code]);
+        }
+        
         if ($stmt->fetch()) {
             $error_message = 'Bu kupon kodu zaten var.';
         } else {
-            $stmt = $pdo->prepare("INSERT INTO coupons (code, discount, company_id, usage_limit, expire_date) VALUES (?, ?, ?, ?, ?)");
-            if ($stmt->execute([$code, $discount, $company_id, $usage_limit, $expire_date])) {
-                setSuccessMessage('Kupon oluşturuldu.');
+            try {
+                if ($is_edit) {
+                    // Güncelleme
+                    $stmt = $pdo->prepare("UPDATE coupons SET code = ?, discount = ?, company_id = ?, usage_limit = ?, expire_date = ? WHERE id = ?");
+                    $stmt->execute([$code, $discount, $company_id, $usage_limit, $expire_date, $coupon_id]);
+                    setSuccessMessage('Kupon güncellendi.');
+                } else {
+                    // Oluşturma
+                    $stmt = $pdo->prepare("INSERT INTO coupons (code, discount, company_id, usage_limit, expire_date) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->execute([$code, $discount, $company_id, $usage_limit, $expire_date]);
+                    setSuccessMessage('Kupon oluşturuldu.');
+                }
                 header('Location: coupons.php');
                 exit();
-            } else {
-                $error_message = 'Kupon oluşturulamadı.';
+            } catch (Exception $e) {
+                $error_message = $is_edit ? 'Kupon güncellenemedi.' : 'Kupon oluşturulamadı.';
             }
         }
     }
@@ -73,8 +105,11 @@ $companies = $pdo->query("SELECT id, name FROM bus_companies ORDER BY name")->fe
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h2 class="text-white"><i class="fas fa-plus me-2"></i>Yeni Kupon</h2>
-                <p class="text-muted">Genel veya firma bazlı kupon oluşturun</p>
+                <h2 class="text-white">
+                    <i class="fas fa-<?php echo $is_edit ? 'edit' : 'plus'; ?> me-2"></i>
+                    <?php echo $is_edit ? 'Kupon Düzenle' : 'Yeni Kupon'; ?>
+                </h2>
+                <p class="text-muted"><?php echo $is_edit ? 'Kupon bilgilerini güncelleyin' : 'Genel veya firma bazlı kupon oluşturun'; ?></p>
             </div>
             <a href="coupons.php" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Geri</a>
         </div>
@@ -90,31 +125,45 @@ $companies = $pdo->query("SELECT id, name FROM bus_companies ORDER BY name")->fe
                 <form method="post" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Kupon Kodu</label>
-                        <input type="text" name="code" class="form-control" placeholder="WELCOME10" maxlength="20" required>
+                        <input type="text" name="code" class="form-control" placeholder="WELCOME10" 
+                               value="<?php echo h($_POST['code'] ?? ($coupon['code'] ?? '')); ?>" 
+                               maxlength="20" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">İndirim (%)</label>
-                        <input type="number" name="discount" class="form-control" min="1" max="100" step="0.01" required>
+                        <input type="number" name="discount" class="form-control" min="1" max="100" step="0.01" 
+                               value="<?php echo h($_POST['discount'] ?? ($coupon['discount'] ?? '')); ?>" 
+                               required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Kullanım Limiti</label>
-                        <input type="number" name="usage_limit" class="form-control" min="1" value="100" required>
+                        <input type="number" name="usage_limit" class="form-control" min="1" 
+                               value="<?php echo h($_POST['usage_limit'] ?? ($coupon['usage_limit'] ?? '100')); ?>" 
+                               required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Son Kullanma (opsiyonel)</label>
-                        <input type="date" name="expire_date" class="form-control">
+                        <input type="date" name="expire_date" class="form-control" 
+                               value="<?php echo h($_POST['expire_date'] ?? ($coupon['expire_date'] ?? '')); ?>">
                     </div>
                     <div class="col-md-8">
                         <label class="form-label">Firma (boş bırakılırsa tüm firmalara geçerli)</label>
                         <select name="company_id" class="form-select">
                             <option value="">Genel Kupon</option>
-                            <?php foreach ($companies as $comp): ?>
-                                <option value="<?php echo $comp['id']; ?>"><?php echo h($comp['name']); ?></option>
+                            <?php foreach ($companies as $comp): 
+                                $selected = (isset($_POST['company_id']) ? $_POST['company_id'] : ($coupon['company_id'] ?? '')) == $comp['id'];
+                            ?>
+                                <option value="<?php echo $comp['id']; ?>" <?php echo $selected ? 'selected' : ''; ?>>
+                                    <?php echo h($comp['name']); ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Oluştur</button>
+                        <a href="coupons.php" class="btn btn-secondary me-2">İptal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i><?php echo $is_edit ? 'Güncelle' : 'Oluştur'; ?>
+                        </button>
                     </div>
                 </form>
             </div>
