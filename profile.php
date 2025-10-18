@@ -158,7 +158,9 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item active" href="profile.php">Hesabım</a></li>
-                            <li><a class="dropdown-item" href="tickets.php">Biletlerim</a></li>
+                            <?php if ($_SESSION['role'] == 'user'): ?>
+                                <li><a class="dropdown-item" href="tickets.php">Biletlerim</a></li>
+                            <?php endif; ?>
                             <?php if ($_SESSION['role'] == 'company'): ?>
                                 <li><a class="dropdown-item" href="company/dashboard.php">Firma Paneli</a></li>
                             <?php endif; ?>
@@ -353,9 +355,11 @@ $stats['total_spent'] = $stmt->fetchColumn() ?: 0;
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <a href="tickets.php" class="btn btn-outline-primary">
-                                <i class="fas fa-ticket-alt me-2"></i>Biletlerim
-                            </a>
+                            <?php if ($_SESSION['role'] == 'user'): ?>
+                                <a href="tickets.php" class="btn btn-outline-primary">
+                                    <i class="fas fa-ticket-alt me-2"></i>Biletlerim
+                                </a>
+                            <?php endif; ?>
                             <a href="search.php" class="btn btn-outline-success">
                                 <i class="fas fa-search me-2"></i>Sefer Ara
                             </a>

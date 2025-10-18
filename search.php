@@ -66,8 +66,10 @@ if (!empty($departure_city) && !empty($destination_city) && !empty($departure_da
                                 <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['full_name']); ?>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">Hesabım</a></li>
-                                <li><a class="dropdown-item" href="tickets.php">Biletlerim</a></li>
+                                <?php if ($_SESSION['role'] == 'user'): ?>
+                                    <li><a class="dropdown-item" href="profile.php">Hesabım</a></li>
+                                    <li><a class="dropdown-item" href="tickets.php">Biletlerim</a></li>
+                                <?php endif; ?>
                                 <?php if ($_SESSION['role'] == 'company'): ?>
                                     <li><a class="dropdown-item" href="company/dashboard.php">Firma Paneli</a></li>
                                 <?php endif; ?>

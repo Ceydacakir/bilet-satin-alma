@@ -98,7 +98,6 @@ $company = $stmt->fetch();
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="../profile.php">Hesabım</a></li>
-                            <li><a class="dropdown-item" href="../tickets.php">Biletlerim</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="../logout.php">Çıkış Yap</a></li>
                         </ul>

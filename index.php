@@ -41,7 +41,7 @@ require_once 'includes/functions.php';
                                 <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['full_name']); ?>
                             </a>
                             <ul class="dropdown-menu">
-                                <?php if ($_SESSION['role'] !== 'admin'): ?>
+                                <?php if ($_SESSION['role'] == 'user'): ?>
                                     <li><a class="dropdown-item" href="profile.php">Hesabım</a></li>
                                     <li><a class="dropdown-item" href="tickets.php">Biletlerim</a></li>
                                 <?php endif; ?>
