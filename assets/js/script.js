@@ -42,6 +42,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Date picker restrictions
     initializeDatePicker();
+    
+    // Initialize animated buses
+    initializeAnimatedBuses();
 });
 
 // Seat Selection Functions
@@ -260,6 +263,27 @@ function hideLoading(element) {
         element.innerHTML = element.dataset.originalContent;
         element.disabled = false;
         delete element.dataset.originalContent;
+    }
+}
+
+// Animated Buses
+function initializeAnimatedBuses() {
+    const heroSection = document.querySelector('.hero-section');
+    if (heroSection) {
+        // Create bus animation layers
+        const busLayers = ['buses', 'buses-2', 'buses-3'];
+        busLayers.forEach(layerClass => {
+            const layer = document.createElement('div');
+            layer.className = layerClass;
+            heroSection.appendChild(layer);
+        });
+
+        // Add random speed variation to buses
+        const buses = document.querySelectorAll('.buses, .buses-2, .buses-3');
+        buses.forEach(bus => {
+            const randomDelay = -Math.random() * 10; // Random start position
+            bus.style.animationDelay = `${randomDelay}s`;
+        });
     }
 }
 

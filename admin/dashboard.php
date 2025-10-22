@@ -100,9 +100,6 @@ $top_companies = $stmt->fetchAll();
                             <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['full_name']); ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="../profile.php">Hesabım</a></li>
-                            <li><a class="dropdown-item" href="../tickets.php">Biletlerim</a></li>
-                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="../logout.php">Çıkış Yap</a></li>
                         </ul>
                     </li>

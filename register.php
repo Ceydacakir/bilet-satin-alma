@@ -60,7 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
-<body class="dark-theme">
+<body class="dark-theme bus-background">
+    <!-- Animated Buses -->
+    <div class="bus bus-1"></div>
+    <div class="bus bus-2"></div>
+    <div class="bus bus-3"></div>
+    <div class="bus bus-4"></div>
+    <div class="bus bus-5"></div>
+    
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">

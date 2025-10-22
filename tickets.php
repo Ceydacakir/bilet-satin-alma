@@ -3,19 +3,8 @@ session_start();
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
-// Giriş kontrolü - sadece user rolü biletlerim sayfasına erişebilir
+// Giriş kontrolü - tüm kullanıcılar biletlerim sayfasına erişebilir
 requireLogin();
-if ($_SESSION['role'] !== 'user') {
-    if ($_SESSION['role'] === 'admin') {
-        setErrorMessage('Admin kullanıcıları biletlerim sayfasına erişemez.');
-    } elseif ($_SESSION['role'] === 'company') {
-        setErrorMessage('Firma admin kullanıcıları biletlerim sayfasına erişemez.');
-    } else {
-        setErrorMessage('Bu sayfa sadece yolcu kullanıcıları için geçerlidir.');
-    }
-    header('Location: index.php');
-    exit();
-}
 
 // Bilet iptal işlemi
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_ticket'])) {
@@ -64,19 +53,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_ticket'])) {
     }
 }
 
-// Kullanıcının biletlerini al
-$stmt = $pdo->prepare("
-    SELECT t.*, tr.departure_city, tr.destination_city, tr.departure_time, tr.arrival_time,
-           bc.name as company_name, GROUP_CONCAT(bs.seat_number) as seat_numbers
-    FROM tickets t
-    JOIN trips tr ON t.trip_id = tr.id
-    JOIN bus_companies bc ON tr.company_id = bc.id
-    LEFT JOIN booked_seats bs ON t.id = bs.ticket_id
-    WHERE t.user_id = ?
-    GROUP BY t.id
-    ORDER BY t.created_at DESC
-");
-$stmt->execute([$_SESSION['user_id']]);
+// Kullanıcının biletlerini al - rol bazlı sorgu
+if ($_SESSION['role'] === 'user') {
+    // Normal kullanıcı - sadece kendi biletleri
+    $stmt = $pdo->prepare("
+        SELECT t.*, tr.departure_city, tr.destination_city, tr.departure_time, tr.arrival_time,
+               bc.name as company_name, GROUP_CONCAT(bs.seat_number) as seat_numbers,
+               u.full_name as passenger_name, u.email as passenger_email
+        FROM tickets t
+        JOIN trips tr ON t.trip_id = tr.id
+        JOIN bus_companies bc ON tr.company_id = bc.id
+        LEFT JOIN booked_seats bs ON t.id = bs.ticket_id
+        JOIN users u ON t.user_id = u.id
+        WHERE t.user_id = ?
+        GROUP BY t.id
+        ORDER BY t.created_at DESC
+    ");
+    $stmt->execute([$_SESSION['user_id']]);
+} elseif ($_SESSION['role'] === 'company') {
+    // Firma admin - kendi firmasının tüm biletleri
+    $stmt = $pdo->prepare("
+        SELECT t.*, tr.departure_city, tr.destination_city, tr.departure_time, tr.arrival_time,
+               bc.name as company_name, GROUP_CONCAT(bs.seat_number) as seat_numbers,
+               u.full_name as passenger_name, u.email as passenger_email
+        FROM tickets t
+        JOIN trips tr ON t.trip_id = tr.id
+        JOIN bus_companies bc ON tr.company_id = bc.id
+        LEFT JOIN booked_seats bs ON t.id = bs.ticket_id
+        JOIN users u ON t.user_id = u.id
+        WHERE tr.company_id = ?
+        GROUP BY t.id
+        ORDER BY t.created_at DESC
+    ");
+    $stmt->execute([$_SESSION['company_id']]);
+} else {
+    // Admin - tüm biletler
+    $stmt = $pdo->prepare("
+        SELECT t.*, tr.departure_city, tr.destination_city, tr.departure_time, tr.arrival_time,
+               bc.name as company_name, GROUP_CONCAT(bs.seat_number) as seat_numbers,
+               u.full_name as passenger_name, u.email as passenger_email
+        FROM tickets t
+        JOIN trips tr ON t.trip_id = tr.id
+        JOIN bus_companies bc ON tr.company_id = bc.id
+        LEFT JOIN booked_seats bs ON t.id = bs.ticket_id
+        JOIN users u ON t.user_id = u.id
+        GROUP BY t.id
+        ORDER BY t.created_at DESC
+    ");
+    $stmt->execute();
+}
 $tickets = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -136,14 +161,24 @@ $tickets = $stmt->fetchAll();
         <div class="row mb-4">
             <div class="col-md-8">
                 <h2 class="text-white">
-                    <i class="fas fa-ticket-alt me-2"></i>Biletlerim
+                    <i class="fas fa-rocket me-2"></i>Bilet Yönetimi
                 </h2>
-                <p class="text-muted">Tüm biletlerinizi buradan görüntüleyebilir ve yönetebilirsiniz.</p>
+                <p class="text-muted">
+                    <?php if ($_SESSION['role'] === 'user'): ?>
+                        Tüm biletlerinizi buradan görüntüleyebilir ve yönetebilirsiniz.
+                    <?php elseif ($_SESSION['role'] === 'company'): ?>
+                        Firmamızın tüm biletlerini buradan görüntüleyebilir ve yönetebilirsiniz.
+                    <?php else: ?>
+                        Sistemdeki tüm biletleri buradan görüntüleyebilir ve yönetebilirsiniz.
+                    <?php endif; ?>
+                </p>
             </div>
             <div class="col-md-4">
                 <div class="card bg-dark border-secondary">
                     <div class="card-body text-center">
-                        <h6 class="text-muted mb-1">Mevcut Bakiye</h6>
+                        <h6 class="text-muted mb-1">
+                            <i class="fas fa-rocket me-1"></i>Mevcut Bakiye
+                        </h6>
                         <h4 class="text-primary mb-0"><?php echo formatPrice($_SESSION['balance']); ?></h4>
                     </div>
                 </div>
@@ -157,9 +192,25 @@ $tickets = $stmt->fetchAll();
         <?php if (empty($tickets)): ?>
             <div class="card bg-dark border-secondary">
                 <div class="card-body text-center py-5">
-                    <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
-                    <h5 class="text-white">Henüz Biletiniz Yok</h5>
-                    <p class="text-muted">İlk biletinizi almak için sefer arayabilirsiniz.</p>
+                    <i class="fas fa-rocket fa-3x text-muted mb-3"></i>
+                    <h5 class="text-white">
+                        <?php if ($_SESSION['role'] === 'user'): ?>
+                            Henüz Biletiniz Yok
+                        <?php elseif ($_SESSION['role'] === 'company'): ?>
+                            Henüz Bilet Satışı Yok
+                        <?php else: ?>
+                            Henüz Bilet Kaydı Yok
+                        <?php endif; ?>
+                    </h5>
+                    <p class="text-muted">
+                        <?php if ($_SESSION['role'] === 'user'): ?>
+                            İlk biletinizi almak için sefer arayabilirsiniz.
+                        <?php elseif ($_SESSION['role'] === 'company'): ?>
+                            Müşterileriniz bilet aldığında burada görünecektir.
+                        <?php else: ?>
+                            Sistem kullanılmaya başlandığında biletler burada görünecektir.
+                        <?php endif; ?>
+                    </p>
                     <a href="search.php" class="btn btn-primary">
                         <i class="fas fa-search me-2"></i>Sefer Ara
                     </a>
@@ -171,15 +222,20 @@ $tickets = $stmt->fetchAll();
                     <div class="col-lg-6 mb-4">
                         <div class="card bg-dark border-secondary h-100">
                             <div class="card-body">
-                                <!-- Bilet Başlığı - Sadeleştirilmiş -->
+                                <!-- Bilet Başlığı - Geliştirilmiş -->
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div>
                                         <h5 class="text-white mb-1">
-                                            <i class="fas fa-bus me-2"></i><?php echo h($ticket['company_name']); ?>
+                                            <i class="fas fa-rocket me-2"></i><?php echo h($ticket['company_name']); ?>
                                         </h5>
                                         <p class="text-muted mb-0">
                                             <i class="fas fa-chair me-1"></i>Koltuk: <?php echo h($ticket['seat_numbers']); ?>
                                         </p>
+                                        <?php if ($_SESSION['role'] !== 'user'): ?>
+                                            <p class="text-muted mb-0">
+                                                <i class="fas fa-user me-1"></i>Yolcu: <?php echo h($ticket['passenger_name']); ?>
+                                            </p>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="text-end">
                                         <?php
@@ -204,7 +260,7 @@ $tickets = $stmt->fetchAll();
                                     </div>
                                 </div>
 
-                                <!-- Sadeleştirilmiş Bilgiler - Sadece Koltuk ve Firma -->
+                                <!-- Geliştirilmiş Bilgiler -->
                                 <div class="row mb-3">
                                     <div class="col-6">
                                         <div class="p-3 bg-secondary rounded text-center">
@@ -217,38 +273,70 @@ $tickets = $stmt->fetchAll();
                                     <div class="col-6">
                                         <div class="p-3 bg-secondary rounded text-center">
                                             <h6 class="text-white mb-1">
-                                                <i class="fas fa-bus me-2"></i>Firma
+                                                <i class="fas fa-rocket me-2"></i>Firma
                                             </h6>
                                             <h5 class="text-success mb-0"><?php echo h($ticket['company_name']); ?></h5>
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <!-- Güzergah ve Tarih Bilgileri -->
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <div class="p-3 bg-secondary rounded text-center">
+                                            <h6 class="text-white mb-1">
+                                                <i class="fas fa-route me-2"></i>Güzergah
+                                            </h6>
+                                            <h6 class="text-info mb-0"><?php echo h($ticket['departure_city']); ?> → <?php echo h($ticket['destination_city']); ?></h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 bg-secondary rounded text-center">
+                                            <h6 class="text-white mb-1">
+                                                <i class="fas fa-clock me-2"></i>Kalkış
+                                            </h6>
+                                            <h6 class="text-warning mb-0"><?php echo formatDate($ticket['departure_time'], 'd.m.Y H:i'); ?></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Fiyat Bilgisi -->
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="p-3 bg-primary rounded text-center">
+                                            <h6 class="text-white mb-1">
+                                                <i class="fas fa-lira-sign me-2"></i>Toplam Fiyat
+                                            </h6>
+                                            <h4 class="text-white mb-0"><?php echo formatPrice($ticket['total_price']); ?></h4>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                <!-- Aksiyon Butonları -->
-                                <div class="d-flex gap-2">
+                                <!-- Aksiyon Butonları - Geliştirilmiş -->
+                                <div class="d-flex gap-2 flex-wrap">
                                     <?php if ($ticket['status'] == 'active'): ?>
                                         <?php if (canCancelTicket($ticket['departure_time'])): ?>
-                                            <button class="btn btn-outline-danger btn-sm" 
-                                                    onclick="confirmCancel(<?php echo $ticket['id']; ?>)">
+                                            <button type="button" 
+                                                    class="btn btn-danger btn-sm" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#cancelModal"
+                                                    data-ticket='<?php echo htmlspecialchars(json_encode([
+                                                        'id' => $ticket['id'],
+                                                        'departure' => $ticket['departure_city'],
+                                                        'destination' => $ticket['destination_city'],
+                                                        'date' => formatDate($ticket['departure_time'])
+                                                    ]), ENT_QUOTES); ?>'>
                                                 <i class="fas fa-times me-1"></i>İptal Et
                                             </button>
                                         <?php else: ?>
-                                            <button class="btn btn-outline-secondary btn-sm" disabled 
-                                                    title="Kalkış saatinden 1 saatten az kaldığı için iptal edilemez">
-                                                <i class="fas fa-times me-1"></i>İptal Edilemez
-                                            </button>
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>İptal Edilemez
+                                            </span>
+                                            <small class="d-block text-muted">Kalkışa 1 saatten az kaldı</small>
                                         <?php endif; ?>
-                                        
-                                        <button class="btn btn-outline-primary btn-sm" 
-                                                onclick="downloadTicket(<?php echo $ticket['id']; ?>)">
-                                            <i class="fas fa-download me-1"></i>PDF İndir
-                                        </button>
+                                    <?php else: ?>
+                                        <span class="badge bg-danger">İptal Edildi</span>
                                     <?php endif; ?>
-                                    
-                                    <button class="btn btn-outline-info btn-sm" 
-                                            onclick="viewTicketDetails(<?php echo $ticket['id']; ?>)">
-                                        <i class="fas fa-eye me-1"></i>Detaylar
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -258,23 +346,32 @@ $tickets = $stmt->fetchAll();
         <?php endif; ?>
     </div>
 
-    <!-- İptal Onay Modal -->
+    <!-- Cancel Modal -->
     <div class="modal fade" id="cancelModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark border-secondary">
-                <div class="modal-header">
-                    <h5 class="modal-title text-white">Bilet İptal Et</h5>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Bilet İptal Onayı</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-white">Bu bilet iptal edilecek ve ücret bakiyenize iade edilecektir. Emin misiniz?</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Bu bileti iptal etmek istediğinizden emin misiniz?
+                    </div>
+                    <div class="card bg-dark-surface border border-secondary">
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Güzergah:</strong> <span id="modalRoute"></span></p>
+                            <p class="mb-2"><strong>Koltuk No:</strong> <span id="modalSeat"></span></p>
+                            <p class="mb-0"><strong>Tarih:</strong> <span id="modalDate"></span></p>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hayır</button>
-                    <form method="POST" style="display: inline;">
-                        <input type="hidden" name="ticket_id" id="cancelTicketId">
-                        <input type="hidden" name="cancel_ticket" value="1">
-                        <button type="submit" class="btn btn-danger">Evet, İptal Et</button>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <form action="ticket_cancel.php" method="POST">
+                        <input type="hidden" name="ticket_id" id="modalTicketId">
+                        <button type="submit" class="btn btn-danger">İptal Et</button>
                     </form>
                 </div>
             </div>
@@ -284,20 +381,32 @@ $tickets = $stmt->fetchAll();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/script.js"></script>
     <script>
-        function confirmCancel(ticketId) {
-            document.getElementById('cancelTicketId').value = ticketId;
-            new bootstrap.Modal(document.getElementById('cancelModal')).show();
-        }
+    function setTicketData(button) {
+        const modal = document.getElementById('cancelModal');
+        document.getElementById('modalRoute').textContent = 
+            `${button.getAttribute('data-departure')} - ${button.getAttribute('data-destination')}`;
+        document.getElementById('modalSeat').textContent = 
+            button.getAttribute('data-seat') || 'Koltuk bilgisi bulunamadı';
+        document.getElementById('modalDate').textContent = 
+            button.getAttribute('data-date');
+        document.getElementById('modalTicketId').value = 
+            button.getAttribute('data-id');
+    }
 
-        function downloadTicket(ticketId) {
-            // PDF indirme işlemi burada yapılacak
-            window.open('download_ticket.php?id=' + ticketId, '_blank');
+    document.addEventListener('DOMContentLoaded', function() {
+        const cancelModal = document.getElementById('cancelModal');
+        if (cancelModal) {
+            cancelModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const ticketData = JSON.parse(button.getAttribute('data-ticket'));
+                
+                document.getElementById('modalRoute').textContent = `${ticketData.departure} - ${ticketData.destination}`;
+                document.getElementById('modalSeat').textContent = ticketData.seat;
+                document.getElementById('modalDate').textContent = ticketData.date;
+                document.getElementById('modalTicketId').value = ticketData.id;
+            });
         }
-
-        function viewTicketDetails(ticketId) {
-            // Bilet detayları modalı burada gösterilecek
-            alert('Bilet detayları: #' + ticketId);
-        }
+    });
     </script>
 </body>
 </html>

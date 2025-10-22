@@ -61,7 +61,7 @@ function requireAnyRole($roles) {
 
 // Güvenli çıktı için HTML escape
 function h($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars($string ?? '', ENT_QUOTES, 'UTF-8');
 }
 
 // Başarı mesajı göster
@@ -176,13 +176,17 @@ function getBookedSeats($pdo, $trip_id) {
 }
 
 // Bilet iptal edilebilir mi?
-function canCancelTicket($departure_time) {
-    $departure = new DateTime($departure_time);
+function canCancelTicket($departureTime) {
+    date_default_timezone_set('Europe/Istanbul');
     $now = new DateTime();
-    $diff = $departure->diff($now);
+    $departure = new DateTime($departureTime);
     
-    // Kalkış saatinden 1 saat öncesine kadar iptal yapılabilir
-    return $departure > $now && $diff->h >= 1;
+    // Calculate difference in hours
+    $diff = $departure->getTimestamp() - $now->getTimestamp();
+    $hoursRemaining = $diff / 3600;
+    
+    // Allow cancellation only if more than 1 hour remains
+    return $hoursRemaining > 1;
 }
 
 // PDF bilet oluştur

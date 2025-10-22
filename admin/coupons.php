@@ -39,10 +39,21 @@ $coupons = $stmt->fetchAll();
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="dashboard.php">Admin Paneli</a></li>
                     <li class="nav-item"><a class="nav-link" href="companies.php">Firmalar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="users.php">Kullanıcılar</a></li>
                     <li class="nav-item"><a class="nav-link active" href="coupons.php">Kuponlar</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="../logout.php">Çıkış Yap</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['full_name']); ?>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="../profile.php">Hesabım</a></li>
+                            <li><a class="dropdown-item" href="../tickets.php">Biletlerim</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="../logout.php">Çıkış Yap</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -90,6 +90,9 @@ $company = $stmt->fetch();
                     <li class="nav-item">
                         <a class="nav-link" href="coupons.php">Kuponlar</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="company_tickets.php">Satılan Biletler</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
@@ -97,8 +100,10 @@ $company = $stmt->fetch();
                             <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['full_name']); ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="../profile.php">Hesabım</a></li>
-                            <li><a class="dropdown-item" href="../tickets.php">Biletlerim</a></li>
+                            <?php if ($_SESSION['role'] == 'company'): ?>
+                                <li><a class="dropdown-item" href="../profile.php">Hesabım</a></li>
+                                <li><a class="dropdown-item" href="../tickets.php">Biletlerim</a></li>
+                            <?php endif; ?>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="../logout.php">Çıkış Yap</a></li>
                         </ul>

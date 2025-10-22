@@ -1,19 +1,21 @@
 /* HopBilet - Modern Koyu Tema */
 
 :root {
-    --primary-color: #6366f1;
-    --primary-dark: #4f46e5;
+    --primary-color: #3b82f6;
+    --primary-dark: #2563eb;
     --secondary-color: #8b5cf6;
     --accent-color: #06b6d4;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
-    --dark-bg: #0f172a;
-    --dark-surface: #1e293b;
-    --dark-card: #334155;
-    --dark-text: #f1f5f9;
-    --dark-muted: #94a3b8;
-    --border-color: #475569;
+    --dark-bg: #111827;
+    --dark-surface: #1f2937;
+    --dark-card: #374151;
+    --dark-text: #ffffff;
+    --dark-muted: #cbd5e1;
+    --border-color: #4b5563;
+    --text-high-contrast: #f8fafc;
+    --text-medium: #e2e8f0;
 }
 
 /* Global Styles */
@@ -58,7 +60,6 @@ body {
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, var(--dark-surface) 0%, var(--dark-card) 100%);
     padding: 100px 0;
     position: relative;
     overflow: hidden;
@@ -80,73 +81,74 @@ body {
     z-index: 2;
 }
 
-/* Uzay temalı arka plan animasyonu - Yıldızlar ve Roketler */
-.stars, .twinkling, .rockets {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: block;
-    pointer-events: none;
+/* Bus Background Pages */
+.bus-background {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-surface) 100%);
+    position: relative;
     overflow: hidden;
 }
 
-.stars {
-    background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 6 6"><polygon points="3,0 3.5,2 6,2 4,3.5 4.5,6 3,4.5 1.5,6 2,3.5 0,2 2.5,2" fill="white" opacity="0.6"/></svg>') repeat;
-    background-size: 6px 6px;
-    opacity: 0.5;
-    z-index: 0;
-    animation: starMove 20s infinite linear;
-}
-
-.twinkling {
-    background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4"><circle cx="2" cy="2" r="1" fill="white" opacity="0.8"/></svg>') repeat;
-    background-size: 4px 4px;
-    animation: twinkle 3s infinite ease-in-out, starMove 15s infinite linear reverse;
-    opacity: 0.4;
+/* Move bus styles outside hero section */
+.bus {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.8;
     z-index: 1;
 }
 
-.rockets {
-    background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewBox="0 0 8 12"><path d="M4,0 L6,4 L4,3 L2,4 Z M4,3 L4,12 M2,8 L4,6 L6,8" stroke="%236366f1" stroke-width="0.5" fill="none" opacity="0.3"/></svg>') repeat;
-    background-size: 8px 12px;
-    animation: rocketMove 25s infinite linear;
-    opacity: 0.3;
-    z-index: 2;
+/* Replace existing bus animations with new colorful buses */
+.bus-1 {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath d='M5,35 h70 v-20 h-70 v20 M75,35 h15 v-15 h-15 M2,35 h3 v-20 h-3 M15,40 a5,5 0 0 0 5,-5 M60,40 a5,5 0 0 0 5,-5' fill='%23e53e3e' stroke='%23742a2a'/%3E%3C/svg%3E");
+    animation: moveBus1 15s linear infinite;
 }
 
-@keyframes starMove {
-    0% { transform: translateY(0) translateX(0); }
-    100% { transform: translateY(-100px) translateX(50px); }
+.bus-2 {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath d='M5,35 h70 v-20 h-70 v20 M75,35 h15 v-15 h-15 M2,35 h3 v-20 h-3 M15,40 a5,5 0 0 0 5,-5 M60,40 a5,5 0 0 0 5,-5' fill='%2348bb78' stroke='%232f855a'/%3E%3C/svg%3E");
+    animation: moveBus2 20s linear infinite;
 }
 
-@keyframes twinkle {
-    0%, 100% { 
-        transform: scale(1); 
-        opacity: 0.3; 
-    }
-    50% { 
-        transform: scale(1.2); 
-        opacity: 0.8; 
-    }
+.bus-3 {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath d='M5,35 h70 v-20 h-70 v20 M75,35 h15 v-15 h-15 M2,35 h3 v-20 h-3 M15,40 a5,5 0 0 0 5,-5 M60,40 a5,5 0 0 0 5,-5' fill='%234299e1' stroke='%232c5282'/%3E%3C/svg%3E");
+    animation: moveBus3 18s linear infinite;
 }
 
-@keyframes rocketMove {
-    0% { 
-        transform: translateY(100vh) translateX(-50px) rotate(15deg); 
-        opacity: 0; 
-    }
-    10% { 
-        opacity: 0.3; 
-    }
-    90% { 
-        opacity: 0.3; 
-    }
-    100% { 
-        transform: translateY(-100px) translateX(50px) rotate(15deg); 
-        opacity: 0; 
-    }
+.bus-4 {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath d='M5,35 h70 v-20 h-70 v20 M75,35 h15 v-15 h-15 M2,35 h3 v-20 h-3 M15,40 a5,5 0 0 0 5,-5 M60,40 a5,5 0 0 0 5,-5' fill='%23ed8936' stroke='%239c4221'/%3E%3C/svg%3E");
+    animation: moveBus4 22s linear infinite;
+}
+
+.bus-5 {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50'%3E%3Cpath d='M5,35 h70 v-20 h-70 v20 M75,35 h15 v-15 h-15 M2,35 h3 v-20 h-3 M15,40 a5,5 0 0 0 5,-5 M60,40 a5,5 0 0 0 5,-5' fill='%239f7aea' stroke='%236b46c1'/%3E%3C/svg%3E");
+    animation: moveBus5 25s linear infinite;
+}
+
+@keyframes moveBus1 {
+    from { left: -10%; top: 20%; transform: scale(0.8); }
+    to { left: 110%; top: 20%; transform: scale(0.8); }
+}
+
+@keyframes moveBus2 {
+    from { left: -10%; top: 40%; transform: scale(0.6); }
+    to { left: 110%; top: 40%; transform: scale(0.6); }
+}
+
+@keyframes moveBus3 {
+    from { left: -10%; top: 60%; transform: scale(1); }
+    to { left: 110%; top: 60%; transform: scale(1); }
+}
+
+@keyframes moveBus4 {
+    from { left: -10%; top: 30%; transform: scale(0.7); }
+    to { left: 110%; top: 30%; transform: scale(0.7); }
+}
+
+@keyframes moveBus5 {
+    from { left: -10%; top: 50%; transform: scale(0.9); }
+    to { left: 110%; top: 50%; transform: scale(0.9); }
 }
 
 .hero-content h1 {
@@ -251,6 +253,33 @@ body {
 
 .route-card .text-muted {
     color: var(--dark-muted) !important;
+}
+
+/* Improved text contrast */
+.text-white {
+    color: var(--text-high-contrast) !important;
+}
+
+.text-muted {
+    color: var(--text-medium) !important;
+}
+
+.card .text-white {
+    color: var(--text-high-contrast) !important;
+}
+
+.card .text-muted {
+    color: var(--text-medium) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-high-contrast) !important;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--text-high-contrast) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
 /* Alerts */

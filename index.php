@@ -20,7 +20,7 @@ require_once 'includes/functions.php';
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="index.php">
-                <i class="fas fa-bus me-2"></i>HopBilet
+                HopBilet
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -70,13 +70,15 @@ require_once 'includes/functions.php';
 
     <!-- Hero Section -->
     <div class="hero-section">
-        <div class="stars"></div>
-        <div class="twinkling"></div>
-        <div class="rockets"></div>
+        <div class="bus bus-1"></div>
+        <div class="bus bus-2"></div>
+        <div class="bus bus-3"></div>
+        <div class="bus bus-4"></div>
+        <div class="bus bus-5"></div>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <div class="hero-content text-center text-white">
+                    <div class="hero-content text-center text-white fade-in-up">
                         <h1 class="display-4 fw-bold mb-4">HopBilet ile Yolculuğa Başla</h1>
                         <p class="lead mb-5">Türkiye'nin en güvenilir otobüs bileti satış platformu</p>
                         
