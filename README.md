@@ -1,32 +1,57 @@
-Çalıştırma
+# Bilet Satın Alma Sistemi
 
-Projeyi çalıştırdıktan sonra tarayıcınızdan şu adresi açabilirsiniz:
+Bu depo, bilet satın alma sisteminin kaynak kodunu içerir. Projeyi yerel ortamınızda hızlı ve kolay bir şekilde kurmak için aşağıdaki talimatları takip edebilirsiniz.
+
+## Kurulum
+
+### Projeyi Klonlama
+
+Projeyi yerel makinenize indirmek için aşağıdaki komutları kullanın:
+```bash
+git clone https://github.com/Ceydacakir/bilet-satin-alma.git
+cd bilet-satin-alma
+```
+
+
+
+DOCKER COMPOSE İLE KURULUM
+
+Bu yöntem, tüm bağımlılıkları (PHP, veritabanı vb.) izole bir ortamda hazırlar ve veritabanı kurulumu otomatik olarak yapılır.
+
+Gereksinimler:
+Sisteminizde Docker kurulu olmalıdır.
+
+Servisleri Başlatmak İçin:
+docker compose up -d
+Erişim Adresi:
 http://localhost:8080
 
-Giriş Bilgileri
-Sistem Yöneticisi
+GİRİŞ BİLGİLERİ
+SİSTEM YÖNETİCİSİ
 
 E-posta: admin@hopbilet.com
 
 Şifre: admin123
 
-Firma Yöneticileri
+FİRMA YÖNETİCİLERİ
 
-roketotobus@hopbilet.com
- / company123
+Firma: HopHop
+E-posta: hophop@hopbilet.com
 
-hophop@hopbilet.com
- / company123
+Şifre: company123
 
-bulutturu@hopbilet.com
- / company123
+Firma: Bulut Turu
+E-posta: bulutturu@hopbilet.com
 
-uzaykoltuk@hopbilet.com
- / company123
+Şifre: company123
 
-Normal Kullanıcı
+Firma: Uzay Koltuk
+E-posta: uzaykoltuk@hopbilet.com
+
+Şifre: company123
+
+NORMAL KULLANICI
 
 E-posta: yolcu@hopbilet.com
 
 Şifre: user123
-
