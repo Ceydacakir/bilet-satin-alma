@@ -7,5 +7,6 @@ services:
       - "8080:80"
     volumes:
       - ./:/var/www/html
+      - ./database:/var/www/html/database
       
     restart: unless-stopped

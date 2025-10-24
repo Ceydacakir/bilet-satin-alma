@@ -32,3 +32,9 @@ RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-avail
 
 # Mod_rewrite'ı (URL yönlendirmeleri için sıkça kullanılır) etkinleştir
 RUN a2enmod rewrite
+
+# Veritabanı klasörü ve dosyasını oluştur
+RUN mkdir -p /var/www/html/database \
+    && touch /var/www/html/database/hop_bilet.db \
+    && chmod 777 /var/www/html/database \
+    && chmod 666 /var/www/html/database/hop_bilet.db
