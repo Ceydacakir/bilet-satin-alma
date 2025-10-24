@@ -1,6 +1,4 @@
-# Bilet Satın Alma Sistemi
 
-Bu depo, bilet satın alma sisteminin kaynak kodunu içerir. Projeyi yerel ortamınızda hızlı ve kolay bir şekilde kurmak için aşağıdaki talimatları takip edebilirsiniz.
 
 ## Kurulum
 
