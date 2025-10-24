@@ -64,7 +64,7 @@ if (!$ticket) {
 }
 
 // PDF oluşturmak için mPDF kütüphanesini dahil et
-$autoloader = __DIR__ . '/vendor/autoload.php';
+$autoloader = __DIR__ . '/../vendor/autoload.php';
 if (!file_exists($autoloader)) {
     // Kütüphane bulunamazsa, kullanıcı dostu bir hata mesajı göster ve işlemi durdur.
     // Bu, sunucuda "composer install" komutunun çalıştırılması gerektiğini belirtir.
