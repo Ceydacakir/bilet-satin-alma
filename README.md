@@ -20,7 +20,9 @@ Gereksinimler:
 Sisteminizde Docker kurulu olmalıdır.
 
 Servisleri Başlatmak İçin:
+```bash
 docker compose up -d
+```
 Erişim Adresi:
 http://localhost:8080
 
