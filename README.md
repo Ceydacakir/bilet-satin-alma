@@ -63,13 +63,19 @@ docker-compose up -d
 
 ## 🔑 Demo Hesaplar
 
-### Admin Hesabı
-- **E-posta**: admin@hopbilet.com
-- **Şifre**: admin123
+### Kullanıcı Tipi,E-posta Örnekleri,Şifre,Rol
 
-### Firma Admin Hesabı
-- **E-posta**: roket@hopbilet.com
-- **Şifre**: company123
+#### Sistem Yöneticisi
+- admin@hopbilet.com admin123
+
+#### Firma Yöneticisi
+- roketotobus@hopbilet.com company123
+- hophop@hopbilet.com company123
+- bulutturu@hopbilet.com company123
+- uzaykoltuk@hopbilet.com company123
+
+#### Normal Kullanıcı
+- yolcu@hopbilet.com user123
 
 ## 📊 Veritabanı Şeması
 

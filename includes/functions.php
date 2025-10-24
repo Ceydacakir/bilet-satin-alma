@@ -24,6 +24,13 @@ function requireLogin() {
     }
 }
 
+function getUserData($pdo, $user_id) {
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $user ?: null;
+}
+
 // Bilet satın alma yetkisi kontrolü - sadece user rolü
 function requireTicketPurchasePermission() {
     requireLogin();
@@ -95,6 +102,9 @@ function displayMessages() {
 
 // Tarih formatla
 function formatDate($date, $format = 'd.m.Y H:i') {
+    if (empty($date) || strtotime($date) === false) {
+        return ''; // veya 'Tarih Yok' gibi bir varsayılan değer
+    }
     return date($format, strtotime($date));
 }
 
@@ -139,7 +149,7 @@ function validateCoupon($pdo, $code, $user_id = null) {
     $stmt->execute([$coupon['id']]);
     $usageCount = $stmt->fetchColumn();
     
-    if ($usageCount >= $coupon['usage_limit']) {
+    if ($coupon['usage_limit'] > 0 && $usageCount >= $coupon['usage_limit']) {
         return ['valid' => false, 'message' => 'Kupon kullanım limiti dolmuş'];
     }
     
@@ -189,6 +199,22 @@ function canCancelTicket($departureTime) {
     return $hoursRemaining > 1;
 }
 
+// Seferin tamamlanıp tamamlanmadığını kontrol eden fonksiyon
+function isTripCompleted($pdo, $trip_id) {
+    $stmt = $pdo->prepare("SELECT arrival_time FROM trips WHERE id = ?");
+    $stmt->execute([$trip_id]);
+    $arrival_time = $stmt->fetchColumn();
+
+    if (!$arrival_time) {
+        return false; // sefer yoksa tamamlanmış sayılmaz
+    }
+    $now = new DateTime();
+    $arrival = new DateTime($arrival_time);
+
+    return $arrival < $now; // varış zamanı geçmişse sefer tamamlanmıştır
+}
+
+
 // PDF bilet oluştur
 function generateTicketPDF($ticket_data) {
     // Bu fonksiyon daha sonra PDF kütüphanesi ile implement edilecek
@@ -222,4 +248,211 @@ function uploadFile($file, $upload_dir = 'uploads/') {
     
     return ['success' => false, 'message' => 'Dosya yüklenemedi'];
 }
+
+function cancelTicketByUser($pdo, $ticket_id, $user_id) {
+    $stmt = $pdo->prepare("
+        SELECT t.*, tr.departure_time 
+        FROM tickets t 
+        JOIN trips tr ON t.trip_id = tr.id 
+        WHERE t.id = ? AND t.user_id = ? AND t.status = 'active'
+    ");
+    $stmt->execute([$ticket_id, $user_id]);
+    $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$ticket) {
+        return ['success' => false, 'message' => 'Bilet bulunamadı veya daha önce iptal edilmiş.'];
+    }
+    
+    if (!canCancelTicket($ticket['departure_time'])) {
+        return ['success' => false, 'message' => 'Kalkış saatinden 1 saatten az kaldığı için bilet iptal edilemez.'];
+    }
+    
+    try {
+        $pdo->beginTransaction();
+        
+        $stmt = $pdo->prepare("UPDATE tickets SET status = 'cancelled' WHERE id = ?");
+        $stmt->execute([$ticket_id]);
+        
+        $stmt = $pdo->prepare("DELETE FROM booked_seats WHERE ticket_id = ?");
+        $stmt->execute([$ticket_id]);
+        
+        $refund_amount = $ticket['total_price'];
+        updateUserBalance($pdo, $user_id, $refund_amount); 
+        $pdo->commit();
+        
+        return ['success' => true, 'message' => 'Bilet başarıyla iptal edildi. Ücret bakiyenize iade edildi.'];
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['success' => false, 'message' => 'Bilet iptal edilirken bir veritabanı hatası oluştu.'];
+    }
+}
+
+function cancelTicketByCompany($pdo, $ticket_id, $company_id) {
+    // 1. Bilet ve Sefer Bilgilerini Al ve Firma Yetkisini Kontrol Et
+    $stmt = $pdo->prepare("
+        SELECT t.*, tr.company_id AS trip_company_id 
+        FROM tickets t 
+        JOIN trips tr ON t.trip_id = tr.id 
+        WHERE t.id = ? AND t.status = 'active'
+    ");
+    $stmt->execute([$ticket_id]);
+    $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$ticket) {
+        return ['success' => false, 'message' => 'Aktif bir bilet bulunamadı.'];
+    }
+
+    // Firma Yetki Kontrolü: Biletin bağlı olduğu sefer, işlemi yapan firmaya mı ait?
+    if ($ticket['trip_company_id'] != $company_id) {
+        return ['success' => false, 'message' => 'Bu bilet, firmanıza ait değildir ve iptal edemezsiniz.'];
+    }
+    
+    try {
+        $pdo->beginTransaction();
+        
+        $stmt = $pdo->prepare("UPDATE tickets SET status = 'cancelled' WHERE id = ?");
+        $stmt->execute([$ticket_id]);
+        
+        $stmt = $pdo->prepare("DELETE FROM booked_seats WHERE ticket_id = ?");
+        $stmt->execute([$ticket_id]);
+        
+        $refund_amount = $ticket['total_price'];
+        $user_id = $ticket['user_id'];
+        
+        updateUserBalance($pdo, $user_id, $refund_amount); 
+        
+        $pdo->commit();
+        
+        $message = "Bilet başarıyla iptal edildi. " . number_format($refund_amount, 2) . " TL tutar, kullanıcının bakiyesine iade edildi.";
+        return ['success' => true, 'message' => $message];
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['success' => false, 'message' => 'Bilet iptal edilirken bir hata oluştu. Lütfen tekrar deneyin.'];
+    }
+}
+
+function cancelTripByCompany($pdo, $trip_id, $company_id) {
+    // 1. Sefer Bilgilerini Al ve Firma Yetkisini Kontrol Et
+    $stmt = $pdo->prepare("SELECT id, company_id FROM trips WHERE id = ?");
+    $stmt->execute([$trip_id]);
+    $trip = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$trip) {
+        return ['success' => false, 'message' => 'Silinecek bir sefer bulunamadı.'];
+    }
+
+    if ($trip['company_id'] != $company_id) {
+        return ['success' => false, 'message' => 'Bu sefer firmanıza ait değildir ve silinemez.'];
+    }
+
+    // 2. Sefer tamamlanmış mı kontrol et
+    $trip_completed = isTripCompleted($pdo, $trip_id);
+
+    try {
+        $pdo->beginTransaction();
+
+        $total_refund_amount = 0;
+        $cancelled_ticket_count = 0;
+
+        if (!$trip_completed) {
+            // 🟢 Henüz tamamlanmamışsa aktif biletleri bul
+            $stmt = $pdo->prepare("
+                SELECT id, user_id, total_price 
+                FROM tickets 
+                WHERE trip_id = ? AND status = 'active'
+            ");
+            $stmt->execute([$trip_id]);
+            $active_tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Her bilet için iade yap
+            foreach ($active_tickets as $ticket) {
+                $user_id = $ticket['user_id'];
+                $refund_amount = (float)$ticket['total_price'];
+                updateUserBalance($pdo, $user_id, $refund_amount);
+                $total_refund_amount += $refund_amount;
+                $cancelled_ticket_count++;
+            }
+
+            // Biletleri iptal et
+            if ($cancelled_ticket_count > 0) {
+                $stmt = $pdo->prepare("UPDATE tickets SET status = 'cancelled' WHERE trip_id = ? AND status = 'active'");
+                $stmt->execute([$trip_id]);
+            }
+
+        } else {
+            $stmt = $pdo->prepare("UPDATE tickets SET status = 'expired' WHERE trip_id = ? AND status = 'active'");
+            $stmt->execute([$trip_id]);
+        }
+
+        // Rezerve koltukları sil
+        $stmt = $pdo->prepare("
+            DELETE FROM booked_seats WHERE ticket_id IN (
+                SELECT id FROM tickets WHERE trip_id = ?
+            )
+        ");
+        $stmt->execute([$trip_id]);
+
+        // Biletleri sil
+        $stmt = $pdo->prepare("DELETE FROM tickets WHERE trip_id = ?");
+        $stmt->execute([$trip_id]);
+
+        // Seferi sil
+        $stmt = $pdo->prepare("DELETE FROM trips WHERE id = ?");
+        $stmt->execute([$trip_id]);
+
+        $pdo->commit();
+
+        if ($trip_completed) {
+            $message = "Sefer tamamlanmış olduğu için bilet iadesi yapılmadı. Sefer başarıyla silindi.";
+        } else {
+            $message = "Sefer başarıyla iptal edildi. Toplam " . 
+                        $cancelled_ticket_count . " adet bilet iptal edilerek, " . 
+                        number_format($total_refund_amount, 2) . " TL tutar kullanıcılara iade edildi.";
+        }
+
+        return [
+            'success' => true, 
+            'message' => $message,
+            'total_refund' => $total_refund_amount
+        ];
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['success' => false, 'message' => 'Sefer iptal edilirken bir hata oluştu. Lütfen tekrar deneyin.'];
+    }
+}
+
+function getTripOccupancy($pdo, $trip_id) {
+    // Sefer kapasitesini al
+    $stmt = $pdo->prepare("SELECT capacity FROM trips WHERE id = ?");
+    $stmt->execute([$trip_id]);
+    $trip = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$trip) {
+        return ['occupied' => 0, 'capacity' => 0, 'percentage' => 0, 'available' => 0];
+    }
+
+    $capacity = (int)$trip['capacity'];
+
+    // Dolu koltuk sayısını booked_seats üzerinden al
+    $stmt = $pdo->prepare("SELECT COUNT(*) as occupied_seats FROM booked_seats bs
+                           JOIN tickets t ON bs.ticket_id = t.id
+                           WHERE t.trip_id = ? AND t.status = 'active'");
+    $stmt->execute([$trip_id]);
+    $occupied = (int)$stmt->fetchColumn();
+
+    $available = $capacity - $occupied;
+    $percentage = $capacity > 0 ? ($occupied / $capacity) * 100 : 0;
+
+    return [
+        'occupied' => $occupied,
+        'capacity' => $capacity,
+        'available' => $available,
+        'percentage' => round($percentage, 1)
+    ];
+}
+
+
 ?>
